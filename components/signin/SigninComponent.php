@@ -1,6 +1,7 @@
 <?php 
 namespace ntentan\plugins\social\components\signin;
 
+use ntentan\plugins\social\Social;
 use ntentan\controllers\components\Component;
 use ntentan\Ntentan;
 
@@ -56,6 +57,11 @@ class SigninComponent extends Component
                 return "failed";
             }
         }
+    }
+    
+    public function setBaseUrl($baseUrl)
+    {
+        Social::$baseUrl = $baseUrl;
     }
     
     public function signinWithGoogle()
