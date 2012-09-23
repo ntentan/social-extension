@@ -14,6 +14,7 @@ class SigninComponent extends Component
         parent::init();
         Ntentan::addIncludePath(Ntentan::$pluginsPath . "social");
         TemplateEngine::appendPath(Ntentan::getPluginPath("social/views/signin"));
+        $this->set('app', Ntentan::$config['application']['name']);
     }
     
     private function doThirdPartySignin($status, $provider, $register)
@@ -128,14 +129,61 @@ class SigninComponent extends Component
     public function setBaseUrl($baseUrl)
     {
         Social::$baseUrl = $baseUrl;
+        $this->set('social_signin_base_url', $baseUrl);
     }
     
     public function signinWithGoogle()
     {
-        $this->set('app', Ntentan::$config['application']['name']);
         $authStatus = $this->doOpenId("https://www.google.com/accounts/o8/id");
         $this->doThirdPartySignin($authStatus, 'Google', 'register_through_google');
     }
+    
+    public function getGoogleProfile()
+    {
+        $this->view->template = false;
+        $this->view->layout = false;
+        
+        if(!$_SESSION['third_party_authenticated'] || $_SESSION['third_party_provider']!= 'Google')
+        {
+            throw new \ntentan\exceptions\RouteNotAvailableException();
+        }
+        
+        require "vendor/google-api-php-client/src/apiClient.php";
+        require "vendor/class.http.php";
+        
+        $apiClient = new \apiClient();
+        
+        $apiClient->setScopes(
+            array(
+                "https://www.googleapis.com/auth/userinfo.profile",
+                "https://www.googleapis.com/auth/userinfo.email"
+            )
+        );
+        $token = json_decode($apiClient->authenticate(), true);
+        
+        if(is_array($token))
+        {
+
+            $_SESSION['provider_data'] = $token;
+
+            $http = new \Http();
+            @$http->execute("https://www.googleapis.com/oauth2/v1/userinfo?access_token={$token['access_token']}");
+            $profile = json_decode($http->result, true);
+            $_SESSION['provider_data']['user_id'] = $profile['id'];
+
+            $_SESSION['third_party_profile']['email'] = $profile['email'];
+            $_SESSION['third_party_profile']['firstname'] = $profile['given_name'];
+            $_SESSION['third_party_profile']['lastname'] = $profile['family_name'];
+            $extension = end(explode('.', $profile['picture']));
+            $_SESSION['third_party_profile']['avatar'] = "tmp/" . uniqid() . ".$extension";
+            $_SESSION['third_party_profile']['username'] = reset(explode("@", $profile['email']));
+
+            $http = new \Http();
+            @$http->execute($profile['picture']);
+            file_put_contents($_SESSION['third_party_profile']['avatar'], $http->result);
+            Ntentan::redirect(Ntentan::getUrl(Social::$baseUrl . "/register"));
+        }
+    }    
     
     public function registerThroughGoogle()
     {
@@ -158,8 +206,6 @@ class SigninComponent extends Component
                 break;
         }
     }
-    
-    
     
     public function register()
     {
@@ -235,6 +281,6 @@ class SigninComponent extends Component
     
     public function confirmRegistration()
     {
-
+        $this->set('firstname', $_SESSION['user']['firstname']);
     }
 }
