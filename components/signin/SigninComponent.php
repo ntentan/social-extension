@@ -149,7 +149,7 @@ class SigninComponent extends Component
         }
         
         require "vendor/google-api-php-client/src/apiClient.php";
-        require "vendor/class.http.php";
+        require "vendor/http/class.http.php";
         
         $apiClient = new \apiClient();
         
