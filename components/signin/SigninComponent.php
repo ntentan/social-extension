@@ -9,6 +9,8 @@ use ntentan\models\Model;
 
 class SigninComponent extends Component
 {
+    public $redirectUrl = '/';
+    
     public function init()
     {
         parent::init();
@@ -17,7 +19,7 @@ class SigninComponent extends Component
         $this->set('app', Ntentan::$config['application']['name']);
     }
     
-    private function doThirdPartySignin($status, $provider, $register)
+    private function doThirdPartySignin($status, $provider)
     {
         $this->view->template = 'signin_third_party.tpl.php';
     
@@ -41,14 +43,7 @@ class SigninComponent extends Component
                 $_SESSION['logged_in'] = true;
                 $user = Model::load('users')->getJustFirstWithId($thirdPartyProfile->user_id);
                 $_SESSION['user'] = $user->toArray();
-    
-                /*Activities::log(
-                    "LOGGED IN VIA THIRD PARTY",
-                    array(
-                        'object' => Activities::OBJECT_THIRD_PARTY_PROFILE,
-                        'object_id' => $thirdPartyProfile->id
-                    )
-                );*/
+                Ntentan::redirect($this->redirectUrl);
             }
     
             if(isset($status['email']))
@@ -64,7 +59,7 @@ class SigninComponent extends Component
                     $this->set('provider', $provider);
                     $this->set('name', $status['firstname']);
                     $this->set('status', 'no_profile');
-                    $this->set('register', $register);
+                    $this->set('register', "register_through/{$provider}");
                 }
             }
         }
@@ -80,117 +75,45 @@ class SigninComponent extends Component
         }
     }
     
-    private function doOpenId($identity)
-    {
-        require "vendor/lightopenid/openid.php";
-        $openid = new \LightOpenID(Ntentan::$config['application']['domain']);
-        if(!$openid->mode)
-        {
-            $this->view->layout = false;
-            $this->view->template = false;
-            $identity = $openid->discover($identity);
-            $openid->identity = $identity;
-    
-            $openid->required = array(
-                'contact/email',
-                'namePerson/first',
-                'namePerson/last',
-                'namePerson/friendly'
-            );
-    
-            header('Location: ' . $openid->authUrl());
-        }
-        elseif($openid->mode == 'cancel')
-        {
-            return "cancelled";
-        }
-        else
-        {
-            if($openid->validate())
-            {
-                $this->set('status', 'logged_in');
-                $oidStatus = $openid->getAttributes();
-                $status = array(
-                    'email' => $oidStatus['contact/email'],
-                    'firstname' => $oidStatus['namePerson/first'],
-                    'lastname' => $oidStatus['namePerson/last'],
-                    'nickname' => $oidStatus['namePerson/friendly'],
-                    'key' => $oidStatus['contact/email']
-                );
-                return $status;
-            }
-            else
-            {
-                return "failed";
-            }
-        }
-    }
-    
     public function setBaseUrl($baseUrl)
     {
         Social::$baseUrl = $baseUrl;
         $this->set('social_signin_base_url', $baseUrl);
     }
     
-    public function signinWithGoogle()
+    private function getSigninServiceObject($serviceType)
     {
-        $authStatus = $this->doOpenId("https://www.google.com/accounts/o8/id");
-        $this->doThirdPartySignin($authStatus, 'Google', 'register_through_google');
+        $serviceTypeClass = "\\ntentan\\plugins\\social\\components\\signin\\services\\" . Ntentan::camelize($serviceType);
+        return new $serviceTypeClass();
     }
     
-    public function getGoogleProfile()
+    public function signin($serviceType)
+    {
+        $service = $this->getSigninServiceObject($serviceType);
+        $authStatus = $service->signin();
+        $this->doThirdPartySignin($authStatus, $service->getProvider());
+    }
+
+    public function getProfile()
     {
         $this->view->template = false;
         $this->view->layout = false;
-        
-        if(!$_SESSION['third_party_authenticated'] || $_SESSION['third_party_provider']!= 'Google')
+        $service = $this->getSigninServiceObject($_SESSION['third_party_provider']);
+        $profile = $service->getProfile();
+        if($profile !== false)
         {
-            throw new \ntentan\exceptions\RouteNotAvailableException();
+            $_SESSION['imported_profile_data'] = $profile;
+            Ntentan::redirect(Ntentan::getUrl(Social::$baseUrl . '/register'));
         }
-        
-        require "vendor/google-api-php-client/src/apiClient.php";
-        require "vendor/http/class.http.php";
-        
-        $apiClient = new \apiClient();
-        
-        $apiClient->setScopes(
-            array(
-                "https://www.googleapis.com/auth/userinfo.profile",
-                "https://www.googleapis.com/auth/userinfo.email"
-            )
-        );
-        $token = json_decode($apiClient->authenticate(), true);
-        
-        if(is_array($token))
-        {
-
-            $_SESSION['provider_data'] = $token;
-
-            $http = new \Http();
-            @$http->execute("https://www.googleapis.com/oauth2/v1/userinfo?access_token={$token['access_token']}");
-            $profile = json_decode($http->result, true);
-            $_SESSION['provider_data']['user_id'] = $profile['id'];
-
-            $_SESSION['third_party_profile']['email'] = $profile['email'];
-            $_SESSION['third_party_profile']['firstname'] = $profile['given_name'];
-            $_SESSION['third_party_profile']['lastname'] = $profile['family_name'];
-            $extension = end(explode('.', $profile['picture']));
-            $_SESSION['third_party_profile']['avatar'] = "tmp/" . uniqid() . ".$extension";
-            $_SESSION['third_party_profile']['username'] = reset(explode("@", $profile['email']));
-
-            $http = new \Http();
-            @$http->execute($profile['picture']);
-            file_put_contents($_SESSION['third_party_profile']['avatar'], $http->result);
-            Ntentan::redirect(Ntentan::getUrl(Social::$baseUrl . "/register"));
-        }
-    }    
+    }
     
-    public function registerThroughGoogle()
+    public function registerThrough($serviceType)
     {
+        $service = $this->getSigninServiceObject($serviceType);
         $this->view->template = false;
         $this->view->layout = false;
     
-        if(!$_SESSION['third_party_authenticated'] || $_SESSION['third_party_provider']!= 'Google')
+        if(!$_SESSION['third_party_authenticated'] || $_SESSION['third_party_provider']!= $service->getProvider())
         {
             throw new \ntentan\exceptions\RouteNotAvailableException();
         }
@@ -198,13 +121,20 @@ class SigninComponent extends Component
         switch($_POST['action'])
         {
             case 'import':
-                Ntentan::redirect(Ntentan::getUrl(Social::$baseUrl . "/get_google_profile"));
+                Ntentan::redirect(Ntentan::getUrl(Social::$baseUrl . "/get_profile"));
                 break;
     
             default:
                 Ntentan::redirect(Ntentan::getUrl(Social::$baseUrl . "/register"));
                 break;
         }
+    }
+    
+    public function signout()
+    {
+        $this->template = false;
+        $_SESSION = array();
+        Ntentan::redirect($this->redirectUrl);
     }
     
     public function register()
@@ -229,11 +159,12 @@ class SigninComponent extends Component
     
                 if($user->validate())
                 {
-                    if($_SESSION['third_party_profile']['avatar'] != '')
+                    if($_SESSION['imported_profile_data']['third_party_profile']['avatar'] != '')
                     {
-                        $dest = basename($_SESSION['third_party_profile']['avatar']);
+                        $dest = basename($_SESSION['imported_profile_data']['third_party_profile']['avatar']);
                         $user->avatar = $dest;
-                        copy($_SESSION['third_party_profile']['avatar'], "uploads/avatars/$dest");
+                        copy($_SESSION['imported_profile_data']['third_party_profile']['avatar'], "uploads/avatars/$dest");
+                        unlink($_SESSION['imported_profile_data']['third_party_profile']['avatar']);
                     }
     
                     $userId = $user->save();
@@ -245,7 +176,7 @@ class SigninComponent extends Component
                         $thirdPartyProfile = Model::load('third_party_profiles');
                         $thirdPartyProfile->user_id = $userId;
                         $thirdPartyProfile->provider = $_SESSION['third_party_provider'];
-                        $thirdPartyProfile->provider_data = json_encode($_SESSION['provider_data']);
+                        $thirdPartyProfile->provider_data = json_encode($_SESSION['imported_profile_data']['provider_data']);
                         $thirdPartyProfile->key = $_SESSION['provider_key'];
                         $profileId = $thirdPartyProfile->save();
                         
@@ -273,9 +204,9 @@ class SigninComponent extends Component
                 }
             }
         }
-        else if(is_array($_SESSION['third_party_profile']))
+        else if(is_array($_SESSION['imported_profile_data']['third_party_profile']))
         {
-            $this->set('form_data', $_SESSION['third_party_profile']);
+            $this->set('form_data', $_SESSION['imported_profile_data']['third_party_profile']);
         }
     }
     

@@ -20,7 +20,7 @@
 <h1>Hmm! Seems like you are already here</h1>
 <p>
     There seems to be an account on <?= $app ?> which has some characteristics similar to
-    the third party profile you are logging in with. If you already have an <?= $app ?>
+    the <?= $provider ?> profile you are logging in with. If you already have an <?= $app ?>
     account and you want to sign in with this <?= $provider ?> profile,
     you might want to sign in with your afrojamz profile first.
 </p>

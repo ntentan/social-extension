@@ -6,13 +6,13 @@
     already existing account.
 </p>
 <p>
-    <a href="<?= u("{$social_signin_base_url}/signin_with_google") ?>" alt="Signin with Google">
+    <a href="<?= u("{$social_signin_base_url}/signin/google") ?>" alt="Signin with Google">
         <img src="<?= u(load_asset('images/google.png', p('social/assets/images/google.png'))) ?>" />
     </a>
-    <a href="<?= u("{$social_signin_base_url}/signin_with_yahoo") ?>" alt="Signin with Yahoo!">
+    <a href="<?= u("{$social_signin_base_url}/signin/yahoo") ?>" alt="Signin with Yahoo!">
         <img src="<?= u(load_asset('images/yahoo.png', p('social/assets/images/yahoo.png'))) ?>" />
     </a>
-    <a  href="<?= u("{$social_signin_base_url}/signin_with_facebook") ?>" alt="Signin with facebook">
+    <a  href="<?= u("{$social_signin_base_url}/signin/facebook") ?>" alt="Signin with facebook">
         <img src="<?= u(load_asset('images/facebook.png', p('social/assets/images/facebook.png'))) ?>" />
     </a>
 </p>
