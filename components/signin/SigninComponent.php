@@ -10,14 +10,26 @@ use ntentan\models\Model;
 class SigninComponent extends Component
 {
     public $redirectUrl = '/';
-    
+    public $excludedRoutes = array();
+
+    /**
+     * Initialize the component.  
+     * 
+     * @see ntentan\controllers.Controller::init()
+     */
     public function init()
     {
         parent::init();
+        
+        // Setup the paths
         Ntentan::addIncludePath(Ntentan::$pluginsPath . "social");
+        
+        // Setup the template engine and set params
         TemplateEngine::appendPath(Ntentan::getPluginPath("social/views/signin"));
         $this->set('app', Ntentan::$config['application']['name']);
     }
+    
+    
     
     private function doThirdPartySignin($status, $provider)
     {
@@ -79,6 +91,21 @@ class SigninComponent extends Component
     {
         Social::$baseUrl = $baseUrl;
         $this->set('social_signin_base_url', $baseUrl);
+        $this->excludedRoutes[] = "$baseUrl\/signin";
+        
+        // Prevent the user from having access to protected content
+        foreach($this->excludedRoutes as $excludedRoute)
+        {
+            if(preg_match("/$excludedRoute/i", Ntentan::$route) > 0)
+            {
+                return;
+            }
+        }
+        
+        if($_SESSION["logged_in"] === false || !isset($_SESSION["logged_in"]))
+        {
+            Ntentan::redirect(Social::$baseUrl . '/signin');
+        }
     }
     
     private function getSigninServiceObject($serviceType)
@@ -87,11 +114,18 @@ class SigninComponent extends Component
         return new $serviceTypeClass();
     }
     
-    public function signin($serviceType)
+    public function signin($serviceType = null)
     {
-        $service = $this->getSigninServiceObject($serviceType);
-        $authStatus = $service->signin();
-        $this->doThirdPartySignin($authStatus, $service->getProvider());
+        if($serviceType === null)
+        {
+            
+        }
+        else
+        {
+            $service = $this->getSigninServiceObject($serviceType);
+            $authStatus = $service->signin();
+            $this->doThirdPartySignin($authStatus, $service->getProvider());
+        }
     }
 
     public function getProfile()
@@ -169,8 +203,6 @@ class SigninComponent extends Component
     
                     $userId = $user->save();
     
-                    //Activities::log("JOINED", array('user_id' => $userId));
-    
                     if($_SESSION['third_party_authenticated'])
                     {
                         $thirdPartyProfile = Model::load('third_party_profiles');
@@ -179,15 +211,6 @@ class SigninComponent extends Component
                         $thirdPartyProfile->provider_data = json_encode($_SESSION['imported_profile_data']['provider_data']);
                         $thirdPartyProfile->key = $_SESSION['provider_key'];
                         $profileId = $thirdPartyProfile->save();
-                        
-                        /*Activities::log(
-                            "ADDED A LINK TO A THIRD PARTY PROFILE",
-                            array(
-                                'object' => Activities::OBJECT_THIRD_PARTY_PROFILE,
-                                'object_id' => $profileId,
-                                'user_id' => $userId
-                            )
-                        );*/
                     }
     
                     $_SESSION = array(

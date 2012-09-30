@@ -38,6 +38,7 @@ class Facebook extends SigninService
             );
             $_SESSION['fb_profile'] = $fbProfile;
             $_SESSION['fb_profile']['user'] = $user;
+            $_SESSION['fb_provider_data'] = $facebook->getAccessToken();
             return $status;
         }
         return 'failed';
@@ -56,7 +57,7 @@ class Facebook extends SigninService
         $profileData['third_party_profile']['othernames'] = $_SESSION['fb_profile']['other_names'];
         $profileData['third_party_profile']['avatar'] = "tmp/" . uniqid() . ".jpg";
         $profileData['third_party_profile']['username'] = $_SESSION['fb_profile']['username'];
-        $profileData['provider_data'] = $_SESSION['fb_profile'];
+        $profileData['provider_data'] = $_SESSION['fb_provider_data'];
         
         require "vendor/class.http.php";
         

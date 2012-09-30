@@ -39,7 +39,7 @@ class Google extends SigninService
             $http = new \Http();
             @$http->execute("https://www.googleapis.com/oauth2/v1/userinfo?access_token={$token['access_token']}");
             $profile = json_decode($http->result, true);
-            $profileData['provider_data']['user_id'] = $profile['id'];
+            $profileData['provider_data'] = $token;
         
             $profileData['third_party_profile']['email'] = $profile['email'];
             $profileData['third_party_profile']['firstname'] = $profile['given_name'];
