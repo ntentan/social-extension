@@ -8,6 +8,7 @@ abstract class SigninService
     protected function doOpenId($identity)
     {
         require "vendor/lightopenid/openid.php";
+        
         $openid = new \LightOpenID(Ntentan::$config['application']['domain']);
         if(!$openid->mode)
         {
