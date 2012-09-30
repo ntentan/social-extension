@@ -7,3 +7,6 @@
 [submodule "vendor/facebook-php-sdk"]
 	path = vendor/facebook-php-sdk
 	url = git://github.com/facebook/facebook-php-sdk.git
+[submodule "vendor/yahoo-yos-social-php5"]
+	path = vendor/yahoo-yos-social-php5
+	url = git://github.com/yahoo/yos-social-php5.git
