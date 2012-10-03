@@ -10,7 +10,7 @@ use ntentan\models\Model;
 class SigninComponent extends Component
 {
     public $redirectUrl = '/';
-    public $excludedRoutes = array();
+    private $excludedRoutes = array();
 
     /**
      * Initialize the component.  
@@ -28,8 +28,6 @@ class SigninComponent extends Component
         TemplateEngine::appendPath(Ntentan::getPluginPath("social/views/signin"));
         $this->set('app', Ntentan::$config['application']['name']);
     }
-    
-    
     
     private function doThirdPartySignin($status, $provider)
     {
@@ -92,7 +90,13 @@ class SigninComponent extends Component
         Social::$baseUrl = $baseUrl;
         $this->set('social_signin_base_url', $baseUrl);
         $this->excludedRoutes[] = "$baseUrl\/signin";
-        
+        $this->excludedRoutes[] = "$baseUrl\/get_profile";
+        $this->excludedRoutes[] = "$baseUrl\/register";
+        $this->excludedRoutes[] = "$baseUrl\/confirm";
+    }
+    
+    public function authorize()
+    {
         // Prevent the user from having access to protected content
         foreach($this->excludedRoutes as $excludedRoute)
         {
@@ -118,7 +122,7 @@ class SigninComponent extends Component
     {
         if($serviceType === null)
         {
-            
+            $this->view->template = 'social_signin.tpl.php';
         }
         else
         {
@@ -236,5 +240,21 @@ class SigninComponent extends Component
     public function confirmRegistration()
     {
         $this->set('firstname', $_SESSION['user']['firstname']);
+    }
+    
+    public function addExcludedRoutes()
+    {
+        $args = func_get_args();
+        foreach($args as $arg)
+        {
+            if(is_array($arg)) 
+            {
+                $this->excludedRoutes = array_merge($arg, $this->excludedRoutes);
+            }
+            else
+            {
+                $this->excludedRoutes[] = $arg;
+            }
+        }
     }
 }
