@@ -13,7 +13,7 @@ class SigninComponent extends Component
     private $excludedRoutes = array();
 
     /**
-     * Initialize the component.  
+     * Initialize the component.
      * 
      * @see ntentan\controllers.Controller::init()
      */
@@ -93,6 +93,7 @@ class SigninComponent extends Component
         $this->excludedRoutes[] = "$baseUrl\/get_profile";
         $this->excludedRoutes[] = "$baseUrl\/register";
         $this->excludedRoutes[] = "$baseUrl\/confirm";
+        $this->excludedRoutes[] = "$baseUrl\/signup";
     }
     
     public function authorize()
@@ -123,6 +124,22 @@ class SigninComponent extends Component
         if($serviceType === null)
         {
             $this->view->template = 'social_signin.tpl.php';
+            if(isset($_POST['username']))
+            {
+                $user = Model::load('users')->getFirstWithUsername($_POST['username']);
+                if(md5($_POST['password']) == $user->password)
+                {
+                    $_SESSION = array(
+                        'logged_in' => true,
+                        'user' => $user->toArray(),
+                    );
+                    Ntentan::redirect('/');
+                }
+                else
+                {
+                    $this->set('failed', true);
+                }
+            }
         }
         else
         {
@@ -220,7 +237,6 @@ class SigninComponent extends Component
                     $_SESSION = array(
                         'logged_in' => true,
                         'user' => $user->getFirstWithId($userId)->toArray(),
-                        'artist' => $_POST['artist_name'] == '' ? null : $artist->getFirstWithId($artistId)->toArray()
                     );
     
                     Ntentan::redirect('users/confirm_registration');

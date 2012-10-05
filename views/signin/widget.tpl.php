@@ -5,13 +5,12 @@
     </div>
     <?php endif; ?>
     <?php
-    $helpers->form->setData($_POST);
-    echo $helpers->form->open('login-form');
+    echo $helpers->form->open('login-form')->action(u($social_signin_base_url . '/signin'));
     echo $helpers->form->get_text_field('Username or Email', 'username');
     echo $helpers->form->get_password_field('Password', 'password');
     ?>
-    <a href="<?= u($social_signin_base_url . '/forgotten_password') ?>">Forgotten your password?</a><br/>
-    <a href="<?= u($social_signin_base_url . '/signup') ?>">Register for a new account</a>
+    <!-- <a href="<?= u($social_signin_base_url . '/forgotten_password') ?>">Forgotten your password?</a><br/>-->
+    <a href="<?= u($social_signin_base_url . '/register') ?>">Register for a new account</a>
     <?php echo $this->helpers->form->close('Login'); ?>
 </div>
 

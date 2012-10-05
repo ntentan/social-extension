@@ -2,19 +2,13 @@
 <?php if($_SESSION['third_party_authenticated'] !== true): ?>
 <p>
     You may not need to register if you have an account with any of these 
-    services. Just click on the appropriate service below to login with your
-    already existing account.
+    services. Just click on the appropriate service below to login with an
+    existing account.
 </p>
 <p>
-    <a href="<?= u("{$social_signin_base_url}/signin/google") ?>" alt="Signin with Google">
-        <img src="<?= u(load_asset('images/google.png', p('social/assets/images/google.png'))) ?>" />
-    </a>
-    <a href="<?= u("{$social_signin_base_url}/signin/yahoo") ?>" alt="Signin with Yahoo!">
-        <img src="<?= u(load_asset('images/yahoo.png', p('social/assets/images/yahoo.png'))) ?>" />
-    </a>
-    <a  href="<?= u("{$social_signin_base_url}/signin/facebook") ?>" alt="Signin with facebook">
-        <img src="<?= u(load_asset('images/facebook.png', p('social/assets/images/facebook.png'))) ?>" />
-    </a>
+    <a href="<?= u("{$social_signin_base_url}/signin/google") ?>" alt="Signin with Google"><img src="<?= u(load_asset('images/google.png', p('social/assets/images/google.png'))) ?>" /></a>
+    <a href="<?= u("{$social_signin_base_url}/signin/yahoo") ?>" alt="Signin with Yahoo!"><img src="<?= u(load_asset('images/yahoo.png', p('social/assets/images/yahoo.png'))) ?>" /></a>
+    <a  href="<?= u("{$social_signin_base_url}/signin/facebook") ?>" alt="Signin with facebook"><img src="<?= u(load_asset('images/facebook.png', p('social/assets/images/facebook.png'))) ?>" /></a>
 </p>
 <hr/>
 <?php endif; ?>
