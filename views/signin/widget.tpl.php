@@ -9,9 +9,9 @@
     echo $helpers->form->get_text_field('Username or Email', 'username');
     echo $helpers->form->get_password_field('Password', 'password');
     ?>
+    <?php echo $this->helpers->form->close('Login'); ?>
     <!-- <a href="<?= u($social_signin_base_url . '/forgotten_password') ?>">Forgotten your password?</a><br/>-->
     <a href="<?= u($social_signin_base_url . '/register') ?>">Register for a new account</a>
-    <?php echo $this->helpers->form->close('Login'); ?>
 </div>
 
 <div id="third-party-accounts">

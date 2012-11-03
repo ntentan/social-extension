@@ -1,5 +1,10 @@
 <h2>Signup</h2>
-<?php if($_SESSION['third_party_authenticated'] !== true): ?>
+<?php if($_SESSION['third_party_authenticated'] === true): ?>
+<p>
+    Here's the profile we imported from <b><?= $_SESSION['third_party_provider'] ?></b>.
+    Hope you're well represented.
+</p>
+<?php else: ?>
 <p>
     You may not need to register if you have an account with any of these 
     services. Just click on the appropriate service below to login with an
@@ -27,6 +32,10 @@
     {
         echo $this->helpers->form->get_password_field('Password', 'password')->required(true);
         echo $this->helpers->form->get_password_field('Retype-Password', 'password2')->required(true);
+        echo $this->helpers->form->close('Register');
     }
-    echo $this->helpers->form->close('Register') 
+    else
+    {
+        echo $this->helpers->form->close("Save {$_SESSION['third_party_provider']} profile");
+    } 
 ?>

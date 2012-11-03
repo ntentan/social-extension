@@ -92,7 +92,6 @@ class SigninComponent extends Component
         $this->excludedRoutes[] = "$baseUrl\/signin";
         $this->excludedRoutes[] = "$baseUrl\/get_profile";
         $this->excludedRoutes[] = "$baseUrl\/register";
-        $this->excludedRoutes[] = "$baseUrl\/confirm";
         $this->excludedRoutes[] = "$baseUrl\/signup";
     }
     

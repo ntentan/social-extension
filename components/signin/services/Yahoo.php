@@ -14,7 +14,7 @@ class Yahoo extends SigninService
     
     public function signin()
     {
-        return $this->doOpenId("https://yahoo.com");
+        return $this->doOpenId("https://me.yahoo.com");
     }
     
     public function getProvider()
