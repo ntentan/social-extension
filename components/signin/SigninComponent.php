@@ -187,7 +187,7 @@ class SigninComponent extends Component
     public function signout()
     {
         $this->template = false;
-        $_SESSION = array();
+        session_destroy();
         Ntentan::redirect($this->redirectUrl);
     }
     
