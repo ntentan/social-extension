@@ -44,7 +44,8 @@ class Google extends SigninService
             $profileData['third_party_profile']['email'] = $profile['email'];
             $profileData['third_party_profile']['firstname'] = $profile['given_name'];
             $profileData['third_party_profile']['lastname'] = $profile['family_name'];
-            $extension = end(explode('.', $profile['picture']));
+            $array = explode('.', $profile['picture']);
+            $extension = end($array);
             $profileData['third_party_profile']['avatar'] = "tmp/" . uniqid() . ".$extension";
             $profileData['third_party_profile']['username'] = reset(explode("@", $profile['email']));
         
