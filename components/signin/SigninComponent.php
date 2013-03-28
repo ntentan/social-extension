@@ -73,12 +73,12 @@ class SigninComponent extends Component
                 }
             }
         }
-        else if($authStatus == "cancelled")
+        else if($status == "cancelled")
         {
             $this->set('status', $status);
             $this->set('provider', $provider);
         }
-        else if($authStatus == "failed")
+        else if($status == "failed")
         {
             $this->set('status', $status);
             $this->set('provider', $provider);
