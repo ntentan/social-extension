@@ -47,7 +47,8 @@ class Google extends SigninService
             $array = explode('.', $profile['picture']);
             $extension = end($array);
             $profileData['third_party_profile']['avatar'] = "tmp/" . uniqid() . ".$extension";
-            $profileData['third_party_profile']['username'] = reset(explode("@", $profile['email']));
+            $explodedEmail = explode("@", $profile['email']);
+            $profileData['third_party_profile']['username'] = reset($explodedEmail);
         
             $http = new \Http();
             @$http->execute($profile['picture']);

@@ -22,7 +22,7 @@
     There seems to be an account on <?= $app ?> which has some characteristics similar to
     the <?= $provider ?> profile you are logging in with. If you already have an <?= $app ?>
     account and you want to sign in with this <?= $provider ?> profile,
-    you might want to sign in with your afrojamz profile first.
+    you might want to sign in with your <?= app ?> profile first.
 </p>
 </php>
 <?php endif ?>
@@ -42,10 +42,10 @@ want us to treat this situation?
     <div class="row" id="link-form" style="display:none">
         <div class="column grid_10_5">
         <?php
-        echo $this->helpers->forms->open('login-form')->action("/users/link_profiles");
-        echo $this->helpers->forms->get_text_field("Username or Email", "username");
-        echo $this->helpers->forms->get_password_field("Password", "password");
-        echo $this->helpers->forms->close('Link Accounts');
+        echo $this->helpers->form->open('login-form')->action("/users/link_profiles");
+        echo $this->helpers->form->get_text_field("Username or Email", "username");
+        echo $this->helpers->form->get_password_field("Password", "password");
+        echo $this->helpers->form->close('Link Accounts');
         ?>
         </div>
     </div>
@@ -57,10 +57,10 @@ want us to treat this situation?
     <a href="#" onclick="$('#new-profile').slideToggle()">I want to create a new <?= $app ?> profile</a>
     <div id="new-profile" style="display:none">
         <?php
-        echo $this->helpers->forms->open('profile-import-form')->action("/users/$register");
-        echo $this->helpers->forms->get_radio_button("Import my profile data from $provider", "action", "import")->attribute('checked', 'checked');
-        echo $this->helpers->forms->get_radio_button("I'll provide new profile data", "action", "create");
-        echo $this->helpers->forms->close('Create Profile');
+        echo $this->helpers->form->open('profile-import-form')->action("/users/$register");
+        echo $this->helpers->form->get_radio_button("Import my profile data from $provider", "action", "import")->attribute('checked', 'checked');
+        echo $this->helpers->form->get_radio_button("I'll provide new profile data", "action", "create");
+        echo $this->helpers->form->close('Create Profile');
         ?>
     </div>
 </p>

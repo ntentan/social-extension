@@ -66,7 +66,8 @@ class Yahoo extends SigninService
             }
             $profileData['third_party_profile']['firstname'] = $profile->givenName;
             $profileData['third_party_profile']['lastname'] = $profile->familyName;
-            $extension = end(explode('.', $profile->image->imageUrl));
+            $explodedImage = explode('.', $profile->image->imageUrl);
+            $extension = end($explodedImage);
             $profileData['third_party_profile']['avatar'] = "tmp/" . uniqid() . ".$extension";
             $profileData['provider_data'] = $providerData;
             

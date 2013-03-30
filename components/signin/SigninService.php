@@ -12,8 +12,6 @@ abstract class SigninService
         $openid = new \LightOpenID(Ntentan::$config['application']['domain']);
         if(!$openid->mode)
         {
-            $this->view->layout = false;
-            $this->view->template = false;
             $identity = $openid->discover($identity);
             $openid->identity = $identity;
     
@@ -54,7 +52,4 @@ abstract class SigninService
     abstract public function signin();
     abstract public function getProvider();
     abstract public function getProfile();
-    
-    /*public function getProfile($service);
-    public function registerThrough($service);*/
 }
