@@ -9,8 +9,13 @@ use ntentan\models\Model;
 
 class SigninComponent extends Component
 {
+    const ON_SUCCESS_REDIRECT = 'redirect';
+    const ON_SUCCESS_CALL_FUNCTION = 'call_function';
+    
     public $redirectUrl = '/';
     private $excludedRoutes = array();
+    public $onSuccess = self::ON_SUCCESS_REDIRECT;
+    public $successFunction;
 
     /**
      * Initialize the component.
@@ -53,7 +58,8 @@ class SigninComponent extends Component
                 $_SESSION['logged_in'] = true;
                 $user = Model::load('users')->getJustFirstWithId($thirdPartyProfile->user_id);
                 $_SESSION['user'] = $user->toArray();
-                Ntentan::redirect($this->redirectUrl);
+                
+                $this->performSuccessOperation();
             }
     
             if(isset($status['email']))
@@ -132,7 +138,7 @@ class SigninComponent extends Component
                         'logged_in' => true,
                         'user' => $user->toArray(),
                     );
-                    Ntentan::redirect('/');
+                    $this->performSuccessOperation();
                 }
                 else
                 {
@@ -254,7 +260,14 @@ class SigninComponent extends Component
     
     public function confirmRegistration()
     {
-        $this->set('firstname', $_SESSION['user']['firstname']);
+        if($_GET['confirmed'] == 'yes')
+        {
+            $this->performSuccessOperation();
+        }
+        else
+        {
+            $this->set('firstname', $_SESSION['user']['firstname']);
+        }
     }
     
     public function addExcludedRoutes()
@@ -271,5 +284,23 @@ class SigninComponent extends Component
                 $this->excludedRoutes[] = $arg;
             }
         }
+    }
+    
+    private function performSuccessOperation()
+    {
+        switch($this->onSuccess)
+        {
+            case self::ON_SUCCESS_REDIRECT:
+                Ntentan::redirect($this->redirectUrl);
+                break;
+
+            case self::ON_SUCCESS_CALL_FUNCTION:
+                $decomposed = explode("::", $this->successFunction);
+                $className = $decomposed[0];
+                $methodName = $decomposed[1];
+                $method = new \ReflectionMethod($className, $methodName);
+                $method->invoke(null, $this->controller);                            
+                break;
+        }        
     }
 }
