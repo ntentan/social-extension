@@ -14,8 +14,10 @@ class SigninComponent extends Component
     
     public $redirectUrl = '/';
     private $excludedRoutes = array();
-    public $onSuccess = self::ON_SUCCESS_REDIRECT;
-    public $successFunction;
+    public $onSignin = self::ON_SUCCESS_REDIRECT;
+    public $signinFunction;
+    public $onSignout = self::ON_SUCCESS_REDIRECT;
+    public $signoutFunction;
 
     /**
      * Initialize the component.
@@ -192,8 +194,18 @@ class SigninComponent extends Component
     
     public function signout()
     {
-        $this->template = false;
-        session_destroy();
+        $this->template = false;        
+        
+        if($this->signoutFunction != '')
+        {
+            $decomposed = explode("::", $this->signoutFunction);
+            $className = $decomposed[0];
+            $methodName = $decomposed[1];
+            $method = new \ReflectionMethod($className, $methodName);
+            $method->invoke(null, $this->controller);       
+        }
+        
+        session_destroy();        
         Ntentan::redirect($this->redirectUrl);
     }
     
@@ -288,14 +300,14 @@ class SigninComponent extends Component
     
     private function performSuccessOperation()
     {
-        switch($this->onSuccess)
+        switch($this->onSignin)
         {
             case self::ON_SUCCESS_REDIRECT:
                 Ntentan::redirect($this->redirectUrl);
                 break;
 
             case self::ON_SUCCESS_CALL_FUNCTION:
-                $decomposed = explode("::", $this->successFunction);
+                $decomposed = explode("::", $this->signinFunction);
                 $className = $decomposed[0];
                 $methodName = $decomposed[1];
                 $method = new \ReflectionMethod($className, $methodName);
