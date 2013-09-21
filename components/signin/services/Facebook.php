@@ -11,8 +11,8 @@ class Facebook extends SigninService
         require "vendor/facebook-php-sdk/src/facebook.php";
         $facebook = new \Facebook(
             array(
-                'appId' => Ntentan::$config['ntentan_social']['facebook']['app_id'],
-                'secret' => Ntentan::$config['ntentan_social']['facebook']['secret']
+                'appId' => Ntentan::$config['social.facebook.app_id'],
+                'secret' => Ntentan::$config['social.facebook.secret']
             )
         );
         $user = $facebook->getUser();

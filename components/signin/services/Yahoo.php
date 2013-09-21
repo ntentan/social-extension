@@ -33,9 +33,9 @@ class Yahoo extends SigninService
         require "vendor/http/class.http.php";
         
         $oauthapp = new \YahooOAuthApplication(
-            Ntentan::$config['ntentan_social']['yahoo']['consumer_key'],
-            Ntentan::$config['ntentan_social']['yahoo']['consumer_secret'],
-            Ntentan::$config['ntentan_social']['yahoo']['app_id'],
+            Ntentan::$config['social.yahoo.consumer_key'],
+            Ntentan::$config['social.yahoo.consumer_secret'],
+            Ntentan::$config['social.yahoo.app_id'],
             'http://owarega.me/users/get_profile'
         );
         
