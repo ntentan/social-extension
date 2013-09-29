@@ -40,8 +40,6 @@ class Google extends SigninService
         {
             $user = $oauth2->userinfo->get();
             
-            var_dump($user);
-            
             return array(
                 'firstname' => $user['given_name'],
                 'lastname' => $user['family_name'],

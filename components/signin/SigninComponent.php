@@ -136,6 +136,12 @@ class SigninComponent extends Component
                     $user->lastname = $authStatus['lastname'];
                     $user->email_confirmed = $authStatus['email_confirmed'];
                     $userID = $user->save();
+                    
+                    $thirdParty = Model::load('third_party_profiles')->getNew();
+                    $thirdParty->user_id = $userID;
+                    $thirdParty->provider = $service->getProvider();
+                    $thirdParty->key = $authStatus['key'];
+                    $thirdParty->save();
                 }
                 
                 // Sign in the associated user.
