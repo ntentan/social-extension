@@ -111,11 +111,31 @@ class SigninComponent extends Component
                 // an associated user. However check if the email exists and warn
                 // if necessary
                 
+                require_once "vendor/http/class.http.php";
+                
                 $user = Model::load('users')->getJustFirstWithEmail($authStatus['email']);
                 if($user->count() == 1) 
                 {
                     $this->set('status', 'existing');
                     return;
+                }
+                else
+                {
+                    $user = Model::load('users')->getNew();
+                    $user->username = $authStatus['email'];
+                    $user->password = '-';
+                    $user->email = $authStatus['email'];
+                    
+                    @$avatar = uniqid() . end(explode('.', $authStatus['avatar']));
+                    $http = new \Http();
+                    @$http->execute($authStatus['avatar']);
+                    file_put_contents("uploads/avatars/$avatar", $http->result);
+                    
+                    $user->avatar = $avatar;
+                    $user->firstname = $authStatus['firstname'];
+                    $user->lastname = $authStatus['lastname'];
+                    $user->email_confirmed = $authStatus['email_confirmed'];
+                    $userID = $user->save();
                 }
                 
                 // Sign in the associated user.

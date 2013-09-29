@@ -15,7 +15,6 @@ class Google extends SigninService
         $client->setClientId(Ntentan::$config['social.google.client_id']);
         $client->setClientSecret(Ntentan::$config['social.google.client_secret']);
         $client->setRedirectUri(Ntentan::$config['social.google.redirect_uri']);
-        //$client->setScopes("https://www.googleapis.com/auth/plus.login", "https://www.googleapis.com/auth/userinfo.email");
         
         $oauth2 = new \Google_Oauth2Service($client);
         
@@ -41,14 +40,17 @@ class Google extends SigninService
         {
             $user = $oauth2->userinfo->get();
             
+            var_dump($user);
+            
             return array(
                 'firstname' => $user['given_name'],
                 'lastname' => $user['family_name'],
-                'key' => $user['id'],
+                'key' => "google_{$user['id']}",
                 'avatar' => $user['picture'],
-                'email' => $user['email']
+                'email' => $user['email'],
+                'email_confirmed' => $user['verified_email']
             );
-            
+                            
             $_SESSION['token'] = $client->getAccessToken();
         }
         else
