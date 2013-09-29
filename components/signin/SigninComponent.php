@@ -152,7 +152,6 @@ class SigninComponent extends Component
         {
             $service = $this->getSigninServiceObject($serviceType);
             $authStatus = $service->signin();
-            $this->doThirdPartySignin($authStatus, $service->getProvider());
         }
     }
 

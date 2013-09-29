@@ -2,62 +2,54 @@
 namespace ntentan\plugins\social\components\signin\services;
 
 use ntentan\plugins\social\components\signin\SigninService;
+use ntentan\Ntentan;
 
 class Google extends SigninService
 {
     public function signin()
     {
-        return $this->doOpenId("https://www.google.com/accounts/o8/id");
+        require_once "vendor/google-api-php-client/src/Google_Client.php";
+        require_once "vendor/google-api-php-client/src/contrib/Google_PlusService.php";
+        
+        $client = new \Google_Client();
+        $client->setClientId(Ntentan::$config['social.google.client_id']);
+        $client->setClientSecret(Ntentan::$config['social.google.client_secret']);
+        $client->setRedirectUri(Ntentan::$config['social.google.redirect_uri']);
+        //$client->setDeveloperKey('insert_your_developer_key');
+        
+        $plus = new \Google_PlusService($client);
+        
+        if (isset($_REQUEST['logout'])) {
+            unset($_SESSION['access_token']);
+        }
+
+        if (isset($_GET['code'])) {
+            $client->authenticate($_GET['code']);
+            $_SESSION['access_token'] = $client->getAccessToken();
+            header('Location: ' . Ntentan::getUrl(Ntentan::$route));
+        }
+
+        if (isset($_SESSION['access_token'])) {
+            $client->setAccessToken($_SESSION['access_token']);
+        }
+
+        if ($client->getAccessToken()) {
+            $me = $plus->people->get('me');
+            $_SESSION['access_token'] = $client->getAccessToken();
+            
+            
+            
+            return true;
+        }
+        else
+        {
+            header("Location: {$client->createAuthUrl()}");
+            die();
+        }
     }
     
     public function getProvider()
     {
         return 'google';
-    }
-    
-    public function getProfile()
-    {
-        require "vendor/google-api-php-client/src/apiClient.php";
-        require "vendor/http/class.http.php";
-        
-        $apiClient = new \apiClient();
-        
-        $apiClient->setScopes(
-            array(
-                "https://www.googleapis.com/auth/userinfo.profile",
-                "https://www.googleapis.com/auth/userinfo.email"
-            )
-        );
-        $token = json_decode($apiClient->authenticate(), true);
-        $profileData = array();
-        
-        if(is_array($token))
-        {
-        
-            $profileData = $token;
-        
-            $http = new \Http();
-            @$http->execute("https://www.googleapis.com/oauth2/v1/userinfo?access_token={$token['access_token']}");
-            $profile = json_decode($http->result, true);
-            $profileData['provider_data'] = $token;
-        
-            $profileData['third_party_profile']['email'] = $profile['email'];
-            $profileData['third_party_profile']['firstname'] = $profile['given_name'];
-            $profileData['third_party_profile']['lastname'] = $profile['family_name'];
-            $array = explode('.', $profile['picture']);
-            $extension = end($array);
-            $profileData['third_party_profile']['avatar'] = "tmp/" . uniqid() . ".$extension";
-            $explodedEmail = explode("@", $profile['email']);
-            $profileData['third_party_profile']['username'] = reset($explodedEmail);
-        
-            $http = new \Http();
-            @$http->execute($profile['picture']);
-            file_put_contents($profileData['third_party_profile']['avatar'], $http->result);
-            return $profileData;
-        }
-        else
-        {
-            return false;
-        }
     }
 }

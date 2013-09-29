@@ -23,8 +23,8 @@ if (!extension_loaded('pdo') || !extension_loaded('pdo_sqlite')) {
 /**
  * Include the library files for the api client and AdSense service class.
  */
-require_once "../../src/apiClient.php";
-require_once "../../src/contrib/apiAdsenseService.php";
+require_once "../../src/Google_Client.php";
+require_once "../../src/contrib/Google_AdSenseService.php";
 
 /**
  * Handles authentication and OAuth token storing.
@@ -46,7 +46,7 @@ class AdSenseAuth {
    */
   public function __construct() {
     // Create the apiClient instances.
-    $this->apiClient = new apiClient();
+    $this->apiClient = new Google_Client();
     // Visit https://code.google.com/apis/console?api=adsense to
     // generate your oauth2_client_id, oauth2_client_secret, and to
     // register your oauth2_redirect_uri.
@@ -56,7 +56,7 @@ class AdSenseAuth {
     // Point the oauth2_redirect_uri to index.php.
     $this->apiClient->setRedirectUri('http://localhost/index.php');
     // Create the api AdsenseService instance.
-    $this->adSenseService = new apiAdsenseService($this->apiClient);
+    $this->adSenseService = new Google_AdsenseService($this->apiClient);
   }
 
   /**
@@ -67,6 +67,10 @@ class AdSenseAuth {
   public function authenticate($user) {
     $this->user = $user;
     $dbh = new PDO('sqlite:examples.sqlite');
+    $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $stmt = $dbh->prepare('CREATE TABLE IF NOT EXISTS auth ' .
+        '(user VARCHAR(255), token VARCHAR(255))');
+    $stmt->execute();
     $token = $this->getToken($dbh);
     if (isset($token)) {
       // I already have the token.

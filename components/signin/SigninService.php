@@ -10,6 +10,7 @@ abstract class SigninService
         require "vendor/lightopenid/openid.php";
         
         $openid = new \LightOpenID(Ntentan::$config['application']['domain']);
+        
         if(!$openid->mode)
         {
             $identity = $openid->discover($identity);
@@ -51,5 +52,4 @@ abstract class SigninService
     
     abstract public function signin();
     abstract public function getProvider();
-    abstract public function getProfile();
 }
