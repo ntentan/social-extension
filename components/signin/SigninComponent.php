@@ -35,64 +35,7 @@ class SigninComponent extends Component
         TemplateEngine::appendPath(Ntentan::getPluginPath("social/views/signin"));
         $this->set('app', Ntentan::$config['application']['name']);
     }
-    
-    private function doThirdPartySignin($status, $provider)
-    {
-        $this->view->template = 'signin_third_party.tpl.php';
-    
-        if(is_array($status))
-        {
-            $_SESSION['third_party_authenticated'] = true;
-            $_SESSION['third_party_provider'] = $provider;
-            $_SESSION['provider_key'] = $status['key'];
-    
-            $thirdPartyProfile = Model::load('third_party_profiles')->getJustFirstWithKey(
-                $status['key'],
-                array(
-                    'conditions'=>array(
-                        'provider'=>$provider
-                    )
-                )
-            );
-    
-            if($thirdPartyProfile->count() == 1)
-            {
-                $_SESSION['logged_in'] = true;
-                $user = Model::load('users')->getJustFirstWithId($thirdPartyProfile->user_id);
-                $_SESSION['user'] = $user->toArray();
-                
-                $this->performSuccessOperation();
-            }
-    
-            if(isset($status['email']))
-            {
-                $user = Model::load('users')->getJustFirstWithEmail($status['email'])->toArray();
-                if(isset($user['id']))
-                {
-                    $this->set('status', 'existing');
-                    $this->set('provider', $provider);
-                }
-                else
-                {
-                    $this->set('provider', $provider);
-                    $this->set('name', $status['firstname']);
-                    $this->set('status', 'no_profile');
-                    $this->set('register', "register_through/{$provider}");
-                }
-            }
-        }
-        else if($status == "cancelled")
-        {
-            $this->set('status', $status);
-            $this->set('provider', $provider);
-        }
-        else if($status == "failed")
-        {
-            $this->set('status', $status);
-            $this->set('provider', $provider);
-        }
-    }
-    
+        
     public function setBaseUrl($baseUrl)
     {
         Social::$baseUrl = $baseUrl;
@@ -150,44 +93,33 @@ class SigninComponent extends Component
         }
         else
         {
+            $this->view->template = 'third_party.tpl.php';
             $service = $this->getSigninServiceObject($serviceType);
             $authStatus = $service->signin();
-        }
-    }
-
-    public function getProfile()
-    {
-        $this->view->template = false;
-        $this->view->layout = false;
-        $service = $this->getSigninServiceObject($_SESSION['third_party_provider']);
-        $profile = $service->getProfile();
-        if($profile !== false)
-        {
-            $_SESSION['imported_profile_data'] = $profile;
-            Ntentan::redirect(Ntentan::getUrl(Social::$baseUrl . '/register'));
-        }
-    }
-    
-    public function registerThrough($serviceType)
-    {
-        $service = $this->getSigninServiceObject($serviceType);
-        $this->view->template = false;
-        $this->view->layout = false;
-    
-        if(!$_SESSION['third_party_authenticated'] || $_SESSION['third_party_provider']!= $service->getProvider())
-        {
-            throw new \ntentan\exceptions\RouteNotAvailableException();
-        }
-    
-        switch($_POST['action'])
-        {
-            case 'import':
-                Ntentan::redirect(Ntentan::getUrl(Social::$baseUrl . "/get_profile"));
-                break;
-    
-            default:
-                Ntentan::redirect(Ntentan::getUrl(Social::$baseUrl . "/register"));
-                break;
+            if($authStatus === false)
+            {
+                $this->set('failed', true);
+                $this->set('status', 'failed');
+            }
+            else
+            {
+                // Check if the third party profile exists if it does fetch the
+                // associated user.
+                
+                
+                // If the third party profile doesn't exist create it and create
+                // an associated user. However check if the email exists and warn
+                // if necessary
+                
+                $user = Model::load('users')->getJustFirstWithEmail($authStatus['email']);
+                if($user->count() == 1) 
+                {
+                    $this->set('status', 'existing');
+                    return;
+                }
+                
+                // Sign in the associated user.
+            }
         }
     }
     
