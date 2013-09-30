@@ -105,46 +105,56 @@ class SigninComponent extends Component
             {
                 // Check if the third party profile exists if it does fetch the
                 // associated user.
-                
-                
-                // If the third party profile doesn't exist create it and create
-                // an associated user. However check if the email exists and warn
-                // if necessary
-                
-                require_once "vendor/http/class.http.php";
-                
-                $user = Model::load('users')->getJustFirstWithEmail($authStatus['email']);
-                if($user->count() == 1) 
+                $thirdPartyProfile = Model::load('third_party_profiles')->getFirstWithKey($authStatus['key'])->toArray();
+                if(count($thirdPartyProfile) > 0)
                 {
-                    $this->set('status', 'existing');
-                    return;
+                   $_SESSION['user'] = $thirdPartyProfile['user'];
+                   $_SESSION['logged_in'] = true;
+                   $this->performSuccessOperation();
                 }
-                else
+                else 
                 {
-                    $user = Model::load('users')->getNew();
-                    $user->username = $authStatus['email'];
-                    $user->password = '-';
-                    $user->email = $authStatus['email'];
-                    
-                    @$avatar = uniqid() . end(explode('.', $authStatus['avatar']));
-                    $http = new \Http();
-                    @$http->execute($authStatus['avatar']);
-                    file_put_contents("uploads/avatars/$avatar", $http->result);
-                    
-                    $user->avatar = $avatar;
-                    $user->firstname = $authStatus['firstname'];
-                    $user->lastname = $authStatus['lastname'];
-                    $user->email_confirmed = $authStatus['email_confirmed'];
-                    $userID = $user->save();
-                    
-                    $thirdParty = Model::load('third_party_profiles')->getNew();
-                    $thirdParty->user_id = $userID;
-                    $thirdParty->provider = $service->getProvider();
-                    $thirdParty->key = $authStatus['key'];
-                    $thirdParty->save();
+                    // If the third party profile doesn't exist create it and create
+                    // an associated user. However check if the email exists and warn
+                    // if necessary
+
+                    require_once "vendor/http/class.http.php";
+                    $user = Model::load('users')->getJustFirstWithEmail($authStatus['email']);
+                    if($user->count() == 1) 
+                    {
+                        $this->set('status', 'existing');
+                        return;
+                    }
+                    else
+                    {
+                        $user = Model::load('users')->getNew();
+                        $user->username = $authStatus['email'];
+                        $user->password = '-';
+                        $user->email = $authStatus['email'];
+
+                        @$avatar = uniqid() . '.' . end(explode('.', $authStatus['avatar']));
+                        $http = new \Http();
+                        @$http->execute($authStatus['avatar']);
+                        file_put_contents("uploads/avatars/$avatar", $http->result);
+
+                        $user->avatar = $avatar;
+                        $user->firstname = $authStatus['firstname'];
+                        $user->lastname = $authStatus['lastname'];
+                        $user->email_confirmed = $authStatus['email_confirmed'];
+                        $userID = $user->save();
+                        $user->id = $userID;
+
+                        $thirdParty = Model::load('third_party_profiles')->getNew();
+                        $thirdParty->user_id = $userID;
+                        $thirdParty->provider = $service->getProvider();
+                        $thirdParty->key = $authStatus['key'];
+                        $thirdParty->save();
+                        
+                        $_SESSION['user'] = $user->toArray();
+                        $_SESSION['logged_in'] = true;
+                        $this->performSuccessOperation();                        
+                    }                    
                 }
-                
-                // Sign in the associated user.
             }
         }
     }
