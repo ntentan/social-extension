@@ -39,6 +39,7 @@ class Google extends SigninService
         if ($client->getAccessToken()) 
         {
             $user = $oauth2->userinfo->get();
+            $_SESSION['token'] = $client->getAccessToken();
             
             return array(
                 'firstname' => $user['given_name'],
@@ -47,9 +48,7 @@ class Google extends SigninService
                 'avatar' => $user['picture'],
                 'email' => $user['email'],
                 'email_confirmed' => $user['verified_email']
-            );
-                            
-            $_SESSION['token'] = $client->getAccessToken();
+            );                            
         }
         else
         {

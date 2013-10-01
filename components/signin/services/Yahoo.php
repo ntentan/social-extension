@@ -14,20 +14,6 @@ class Yahoo extends SigninService
     
     public function signin()
     {
-        return $this->doOpenId("https://me.yahoo.com");
-    }
-    
-    public function getProvider()
-    {
-        return 'yahoo';
-    }
-    
-    /**
-     * (non-PHPdoc)
-     * @see ntentan\plugins\social\components\signin.SigninService::getProfile()
-     */
-    public function getProfile()
-    {
         require "vendor/yahoo-yos-social-php5/lib/OAuth/OAuth.php";
         require "vendor/yahoo-yos-social-php5/lib/Yahoo/YahooOAuthApplication.class.php";
         require "vendor/http/class.http.php";
@@ -36,10 +22,10 @@ class Yahoo extends SigninService
             Ntentan::$config['social.yahoo.consumer_key'],
             Ntentan::$config['social.yahoo.consumer_secret'],
             Ntentan::$config['social.yahoo.app_id'],
-            'http://owarega.me/users/get_profile'
+            Ntentan::$config['social.yahoo.redirect_uri']
         );
-        
-        if(!isset($_REQUEST['openid_mode']))
+
+           if(!isset($_REQUEST['openid_mode']))
         {
             Ntentan::redirect($oauthapp->getOpenIDUrl($oauthapp->callback_url), true);
             die();
@@ -48,37 +34,38 @@ class Yahoo extends SigninService
         if($_REQUEST['openid_mode'] == 'id_res')
         {
             $requestToken = new \YahooOAuthRequestToken($_REQUEST['openid_oauth_request_token'],'');
-            $providerData['request_token'] = $requestToken->to_string();
+            $_SESSION['yahoo_oauth_request_token'] = $requestToken->to_string();
             $oauthapp->token = $oauthapp->getAccessToken($requestToken);
-            $providerData['access_token'] = $oauthapp->token->to_string();
+            $_SESSION['yahoo_oauth_access_token'] = $oauthapp->token->to_string();
         }
         
-        $profile = $oauthapp->getProfile()->profile;
+        $profile = $oauthapp->getProfile()->profile;        
         if(is_object($profile))
         {
             foreach($profile->emails as $email)
             {
-                if($email->primary == true)
+                if($email->primary == 'true')
                 {
-                    $profileData['third_party_profile']['email'] = $email->handle;
+                    $email = $email->handle;
                     break;
                 }
             }
-            $profileData['third_party_profile']['firstname'] = $profile->givenName;
-            $profileData['third_party_profile']['lastname'] = $profile->familyName;
-            $explodedImage = explode('.', $profile->image->imageUrl);
-            $extension = end($explodedImage);
-            $profileData['third_party_profile']['avatar'] = "tmp/" . uniqid() . ".$extension";
-            $profileData['provider_data'] = $providerData;
             
-            $http = new \Http();
-            @$http->execute($profile->image->imageUrl);
-            file_put_contents($profileData['third_party_profile']['avatar'], $http->result);
-            return $profileData;
+            return array(
+                'firstname' => $profile->givenName,
+                'lastname' => $profile->familyName,
+                'key' => "yahoo_{$profile->guid}",
+                'avatar' => $profile->image->imageUrl,
+                'email' => $email,
+                'email_confirmed' => true
+            );            
         }
-        else
-        {
-            return false;
-        }
+        
+        die();
     }
+    
+    public function getProvider()
+    {
+        return 'yahoo';
+    }    
 }

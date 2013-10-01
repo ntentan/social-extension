@@ -96,6 +96,9 @@ class SigninComponent extends Component
             $this->view->template = 'third_party.tpl.php';
             $service = $this->getSigninServiceObject($serviceType);
             $authStatus = $service->signin();
+            
+            var_dump($authStatus);
+                
             if($authStatus === false)
             {
                 $this->set('failed', true);
