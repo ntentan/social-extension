@@ -97,8 +97,6 @@ class SigninComponent extends Component
             $service = $this->getSigninServiceObject($serviceType);
             $authStatus = $service->signin();
             
-            var_dump($authStatus);
-                
             if($authStatus === false)
             {
                 $this->set('failed', true);
@@ -135,7 +133,7 @@ class SigninComponent extends Component
                         $user->password = '-';
                         $user->email = $authStatus['email'];
 
-                        @$avatar = uniqid() . '.' . end(explode('.', $authStatus['avatar']));
+                        @$avatar = uniqid() . '.' . (isset($authStatus['avatar_format']) ? $authStatus['avatar_format'] : end(explode('.', $authStatus['avatar'])));
                         $http = new \Http();
                         @$http->execute($authStatus['avatar']);
                         file_put_contents("uploads/avatars/$avatar", $http->result);

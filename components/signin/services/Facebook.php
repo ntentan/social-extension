@@ -25,21 +25,21 @@ class Facebook extends SigninService
                     )
                 )
             );
+            die();
         }
         else
         {
-            $fbProfile = $facebook->api('/me');
-            $status = array(
-                'email' => $fbProfile['email'],
-                'firstname' => $fbProfile['first_name'],
-                'lastname' => $fbProfile['last_name'],
-                'nickname' => $fbProfile['username'],
-                'key' => $fbProfile['email']
-            );
-            $_SESSION['fb_profile'] = $fbProfile;
-            $_SESSION['fb_profile']['user'] = $user;
-            $_SESSION['fb_provider_data'] = $facebook->getAccessToken();
-            return $status;
+            $profile = $facebook->api('/me');
+            
+            return array(
+                'firstname' => $profile['first_name'],
+                'lastname' => $profile['last_name'],
+                'key' => "facebook_{$profile['id']}",
+                'avatar' => "http://graph.facebook.com/{$profile['username']}/picture",
+                'email' => $profile['email'],
+                'email_confirmed' => $profile['verified'],
+                'avatar_format' => 'jpg'
+            );   
         }
         return 'failed';
     }
@@ -47,24 +47,5 @@ class Facebook extends SigninService
     public function getProvider()
     {
         return 'facebook';
-    }
-    
-    public function getProfile()
-    {
-        $profileData['third_party_profile']['email'] = $_SESSION['fb_profile']['email'];
-        $profileData['third_party_profile']['firstname'] = $_SESSION['fb_profile']['first_name'];
-        $profileData['third_party_profile']['lastname'] = $_SESSION['fb_profile']['last_name'];
-        $profileData['third_party_profile']['othernames'] = $_SESSION['fb_profile']['other_names'];
-        $profileData['third_party_profile']['avatar'] = "tmp/" . uniqid() . ".jpg";
-        $profileData['third_party_profile']['username'] = $_SESSION['fb_profile']['username'];
-        $profileData['provider_data'] = $_SESSION['fb_provider_data'];
-        
-        require "vendor/class.http.php";
-        
-        $http = new \Http();
-        @$http->execute("http://graph.facebook.com/{$_SESSION['fb_profile']['user']}/picture");
-        file_put_contents($profileData['third_party_profile']['avatar'], $http->result);
-        
-        return $profileData;
     }
 }
