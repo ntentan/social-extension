@@ -1,20 +1,6 @@
 {
     "name": "ntentan/social-extension",
     "description": "An ntentan framework plugin for integrating your application with social network APIs",
-    "repositories":[
-        {
-            "type": "package",
-            "package": {
-                "name": "yahoo/yos-social-php5",
-                "version": "0.2",
-                "source": {
-                    "url" : "https://github.com/yahoo/yos-social-php5.git",
-                    "type": "git",
-                    "reference": "tags/0.2"
-                }
-            }
-        }
-    ],
     "require": {
         "facebook/php-sdk-v4": "4.0.*",
         "google/apiclient": "1.0.4-beta",
@@ -26,5 +12,8 @@
             "name": "Ekow Abaka Ainooson",
             "email": "jainooson@gmail.com"
         }
-    ]
+    ],
+    "autoload": {
+        "psr-4": {"ntentan\\extensions\\social": "src/"}
+    }
 }
