@@ -16,7 +16,6 @@
         }
     ],
     "require": {
-        "ntentan/ntentan": "dev-master",
         "facebook/php-sdk-v4": "4.0.*",
         "google/apiclient": "1.0.4-beta",
         "yahoo/yos-social-php5": "0.2"
