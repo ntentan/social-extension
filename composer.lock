@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "0bb7496c05b44f5f74e48a722852749f",
+    "hash": "aa6c5f21ab36b6bf3d16d3981d4afcf0",
     "packages": [
         {
             "name": "facebook/php-sdk-v4",
@@ -92,43 +92,6 @@
             "time": "2014-03-07 17:54:19"
         },
         {
-            "name": "ntentan/ntentan",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ntentan/ntentan.git",
-                "reference": "b7e613ed27ae961a0c43ce1cd9810547a7f8fdf7"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/ntentan/zipball/b7e613ed27ae961a0c43ce1cd9810547a7f8fdf7",
-                "reference": "b7e613ed27ae961a0c43ce1cd9810547a7f8fdf7",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "ntentan\\": "lib/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "James Ekow Abaka Ainooson",
-                    "email": "jainooson@gmail.com",
-                    "homepage": "http://ekowabaka.me"
-                }
-            ],
-            "description": "Another PHP application framework.",
-            "time": "2014-06-10 15:46:00"
-        },
-        {
             "name": "yahoo/yos-social-php5",
             "version": "0.2",
             "source": {
@@ -147,7 +110,6 @@
     ],
     "minimum-stability": "stable",
     "stability-flags": {
-        "ntentan/ntentan": 20,
         "google/apiclient": 10
     },
     "platform": [
