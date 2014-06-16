@@ -1,7 +1,7 @@
 <?php
-namespace ntentan\plugins\social;
+namespace ntentan\extensions\social;
 
 class Social
 {
-    public static $baseUrl = null;
+    public static $baseUrl = null;    
 }

@@ -1,7 +1,7 @@
 <?php 
-namespace ntentan\plugins\social\components\signin;
+namespace ntentan\extensions\social\components\signin;
 
-use ntentan\plugins\social\Social;
+use ntentan\extensions\social\Social;
 use ntentan\controllers\components\Component;
 use ntentan\views\template_engines\TemplateEngine;
 use ntentan\Ntentan;
@@ -28,12 +28,10 @@ class SigninComponent extends Component
     {
         parent::init();
         
-        // Setup the paths
-        Ntentan::addIncludePath(Ntentan::$pluginsPath . "social");
-        
         // Setup the template engine and set params
-        TemplateEngine::appendPath(Ntentan::getPluginPath("social/views/signin"));
+        TemplateEngine::appendPath(__DIR__ . "/../../../views/signin");
         $this->set('app', Ntentan::$config['application']['name']);
+        $this->setBaseUrl($this->controller->route);
     }
         
     public function setBaseUrl($baseUrl)
@@ -59,7 +57,7 @@ class SigninComponent extends Component
         
         if($_SESSION["logged_in"] === false || !isset($_SESSION["logged_in"]))
         {
-            Ntentan::redirect(Social::$baseUrl . '/signin');
+            Ntentan::redirect($this->controller->route . '/signin');
         }
     }
     

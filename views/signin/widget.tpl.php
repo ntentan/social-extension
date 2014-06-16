@@ -17,8 +17,8 @@
 <div id="third-party-accounts">
     <p>You can also use your third party accounts from any of these services
     <br/>
-    <a href="<?= u($social_signin_base_url . '/signin/google') ?>" alt="Signin with Google"><img src="<?= u(load_asset('images/google.png', p('social/assets/images/google.png'))) ?>" /></a>
-    <a href="<?= u($social_signin_base_url . '/signin/yahoo') ?>" alt="Signin with Yahoo!"><img src="<?= u(load_asset('images/yahoo.png', p('social/assets/images/yahoo.png'))) ?>" /></a>
-    <a href="<?= u($social_signin_base_url . '/signin/facebook') ?>" alt="Signin with facebook"><img src="<?= u(load_asset('images/facebook.png', p('social/assets/images/facebook.png'))) ?>" /></a>
+    <a href="<?= u($social_signin_base_url . '/signin/google') ?>" alt="Signin with Google"><img src="<?= u(load_asset('images/google.png', __DIR__ . ('/../../assets/images/google.png'))) ?>" /></a>
+    <a href="<?= u($social_signin_base_url . '/signin/yahoo') ?>" alt="Signin with Yahoo!"><img src="<?= u(load_asset('images/yahoo.png',  __DIR__ . ('/../../assets/images/yahoo.png'))) ?>" /></a>
+    <a href="<?= u($social_signin_base_url . '/signin/facebook') ?>" alt="Signin with facebook"><img src="<?= u(load_asset('images/facebook.png',  __DIR__ . ('/../../assets/images/facebook.png'))) ?>" /></a>
     </p>
 </div>

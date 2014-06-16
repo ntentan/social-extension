@@ -1,8 +1,7 @@
 <?php 
-namespace ntentan\plugins\social\widgets\signin;
+namespace ntentan\extensions\social\widgets\signin;
 
-use ntentan\plugins\social\Social;
-use ntentan\Ntentan;
+use ntentan\extensions\social\Social;
 use ntentan\views\widgets\Widget;
 
 class SigninWidget extends Widget
