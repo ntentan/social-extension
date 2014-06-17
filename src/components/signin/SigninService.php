@@ -1,5 +1,5 @@
 <?php
-namespace ntentan\plugins\social\components\signin;
+namespace ntentan\extensions\social\components\signin;
 
 use ntentan\Ntentan;
 

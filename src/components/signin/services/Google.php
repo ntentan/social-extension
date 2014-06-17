@@ -1,22 +1,18 @@
 <?php
-namespace ntentan\plugins\social\components\signin\services;
+namespace ntentan\extensions\social\components\signin\services;
 
-use ntentan\plugins\social\components\signin\SigninService;
+use ntentan\extensions\social\components\signin\SigninService;
 use ntentan\Ntentan;
 
 class Google extends SigninService
 {
     public function signin()
     {
-        require_once "vendor/google-api-php-client/src/Google_Client.php";
-        require_once "vendor/google-api-php-client/src/contrib/Google_Oauth2Service.php";
-        
         $client = new \Google_Client();
         $client->setClientId(Ntentan::$config['social.google.client_id']);
         $client->setClientSecret(Ntentan::$config['social.google.client_secret']);
         $client->setRedirectUri(Ntentan::$config['social.google.redirect_uri']);
         
-        $oauth2 = new \Google_Oauth2Service($client);
         
         if (isset($_REQUEST['logout'])) 
         {

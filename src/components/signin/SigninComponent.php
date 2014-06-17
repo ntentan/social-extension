@@ -63,7 +63,7 @@ class SigninComponent extends Component
     
     private function getSigninServiceObject($serviceType)
     {
-        $serviceTypeClass = "\\ntentan\\plugins\\social\\components\\signin\\services\\" . Ntentan::camelize($serviceType);
+        $serviceTypeClass = "\\ntentan\\extensions\\social\\components\\signin\\services\\" . Ntentan::camelize($serviceType);
         return new $serviceTypeClass();
     }
     
