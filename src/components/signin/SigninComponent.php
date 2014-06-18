@@ -117,7 +117,7 @@ class SigninComponent extends Component
                     // an associated user. However check if the email exists and warn
                     // if necessary
 
-                    require_once "vendor/http/class.http.php";
+                    //require_once "vendor/http/class.http.php";
                     $user = Model::load('users')->getJustFirstWithEmail($authStatus['email']);
                     if($user->count() == 1) 
                     {
@@ -132,9 +132,9 @@ class SigninComponent extends Component
                         $user->email = $authStatus['email'];
 
                         @$avatar = uniqid() . '.' . (isset($authStatus['avatar_format']) ? $authStatus['avatar_format'] : end(explode('.', $authStatus['avatar'])));
-                        $http = new \Http();
-                        @$http->execute($authStatus['avatar']);
-                        file_put_contents("uploads/avatars/$avatar", $http->result);
+                        //$http = new \Http();
+                        //@$http->execute($authStatus['avatar']);
+                        //file_put_contents("uploads/avatars/$avatar", $http->result);
 
                         $user->avatar = $avatar;
                         $user->firstname = $authStatus['firstname'];

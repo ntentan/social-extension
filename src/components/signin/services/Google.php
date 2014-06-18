@@ -12,7 +12,8 @@ class Google extends SigninService
         $client->setClientId(Ntentan::$config['social.google.client_id']);
         $client->setClientSecret(Ntentan::$config['social.google.client_secret']);
         $client->setRedirectUri(Ntentan::$config['social.google.redirect_uri']);
-        
+        $client->addScope(array('profile', 'email'));
+        $oauth2 = new \Google_Service_Oauth2($client);
         
         if (isset($_REQUEST['logout'])) 
         {

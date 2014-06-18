@@ -1,5 +1,5 @@
 <?php
-namespace ntentan\plugins\social\models;
+namespace ntentan\extensions\social\models;
 
 use ntentan\models\Model;
 
