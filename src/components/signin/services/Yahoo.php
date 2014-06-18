@@ -1,7 +1,7 @@
 <?php
-namespace ntentan\plugins\social\components\signin\services;
+namespace ntentan\extensions\social\components\signin\services;
 
-use ntentan\plugins\social\components\signin\SigninService;
+use ntentan\extensions\social\components\signin\SigninService;
 use ntentan\Ntentan;
 
 class Yahoo extends SigninService
@@ -14,9 +14,9 @@ class Yahoo extends SigninService
     
     public function signin()
     {
-        require "vendor/yahoo-yos-social-php5/lib/OAuth/OAuth.php";
+        /*require "vendor/yahoo-yos-social-php5/lib/OAuth/OAuth.php";
         require "vendor/yahoo-yos-social-php5/lib/Yahoo/YahooOAuthApplication.class.php";
-        require "vendor/http/class.http.php";
+        require "vendor/http/class.http.php";*/
         
         $oauthapp = new \YahooOAuthApplication(
             Ntentan::$config['social.yahoo.consumer_key'],
