@@ -118,7 +118,15 @@ class SigninComponent extends Component
                     // if necessary
 
                     //require_once "vendor/http/class.http.php";
-                    $user = Model::load('users')->getJustFirstWithEmail($authStatus['email']);
+                    $user = Model::load('users')->getJustFirst(
+                        array(
+                            'conditions' => array(
+                                'email' => $authStatus['email'],
+                                'email<>' => null
+                            )
+                        )
+                    );
+                    
                     if($user->count() == 1) 
                     {
                         $this->set('status', 'existing');
@@ -127,14 +135,13 @@ class SigninComponent extends Component
                     else
                     {
                         $user = Model::load('users')->getNew();
-                        $user->username = $authStatus['email'];
+                        $user->username = $authStatus['email'] == '' ? uniqid() : $authStatus['email'];
                         $user->password = '-';
                         $user->email = $authStatus['email'];
 
                         @$avatar = uniqid() . '.' . (isset($authStatus['avatar_format']) ? $authStatus['avatar_format'] : end(explode('.', $authStatus['avatar'])));
-                        //$http = new \Http();
-                        //@$http->execute($authStatus['avatar']);
-                        //file_put_contents("uploads/avatars/$avatar", $http->result);
+                        $avatarData = file_get_contents($authStatus['avatar']);
+                        file_put_contents("uploads/avatars/$avatar", $avatarData);
 
                         $user->avatar = $avatar;
                         $user->firstname = $authStatus['firstname'];

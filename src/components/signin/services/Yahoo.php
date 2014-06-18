@@ -13,11 +13,7 @@ class Yahoo extends SigninService
     }
     
     public function signin()
-    {
-        /*require "vendor/yahoo-yos-social-php5/lib/OAuth/OAuth.php";
-        require "vendor/yahoo-yos-social-php5/lib/Yahoo/YahooOAuthApplication.class.php";
-        require "vendor/http/class.http.php";*/
-        
+    {   
         $oauthapp = new \YahooOAuthApplication(
             Ntentan::$config['social.yahoo.consumer_key'],
             Ntentan::$config['social.yahoo.consumer_secret'],
@@ -39,15 +35,19 @@ class Yahoo extends SigninService
             $_SESSION['yahoo_oauth_access_token'] = $oauthapp->token->to_string();
         }
         
-        $profile = $oauthapp->getProfile()->profile;        
+        $profile = $oauthapp->getProfile()->profile;  
+        
         if(is_object($profile))
         {
-            foreach($profile->emails as $email)
+            if(is_array($profile->emails))
             {
-                if($email->primary == 'true')
+                foreach($profile->emails as $email)
                 {
-                    $email = $email->handle;
-                    break;
+                    if($email->primary == 'true')
+                    {
+                        $email = $email->handle;
+                        break;
+                    }
                 }
             }
             
@@ -61,7 +61,7 @@ class Yahoo extends SigninService
             );            
         }
         
-        die();
+        die('Failed');
     }
     
     public function getProvider()

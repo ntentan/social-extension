@@ -11,8 +11,7 @@
 <p>
     There seems to be an account on <?= $app ?> which has some characteristics similar to
     the <?= $provider ?> profile you are logging in with. If you already have an <?= $app ?>
-    account and you want to sign in with this <?= $provider ?> profile,
-    you might want to sign in with your <?= app ?> profile first.
+    account sign in with it.
 </p>
 </php>
 <?php endif ?>
