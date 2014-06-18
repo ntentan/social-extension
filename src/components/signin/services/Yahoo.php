@@ -1,7 +1,7 @@
 <?php
-namespace ntentan\plugins\social\components\signin\services;
+namespace ntentan\extensions\social\components\signin\services;
 
-use ntentan\plugins\social\components\signin\SigninService;
+use ntentan\extensions\social\components\signin\SigninService;
 use ntentan\Ntentan;
 
 class Yahoo extends SigninService
