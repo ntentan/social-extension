@@ -13,6 +13,7 @@ class SigninComponent extends Component
     const ON_SUCCESS_CALL_FUNCTION = 'call_function';
     
     public $redirectUrl = '/';
+    public $signinRoute = false;
     private $excludedRoutes = array();
     public $onSignin = self::ON_SUCCESS_REDIRECT;
     public $signinFunction;
@@ -49,7 +50,7 @@ class SigninComponent extends Component
         // Prevent the user from having access to protected content
         foreach($this->excludedRoutes as $excludedRoute)
         {
-            if(preg_match("/$excludedRoute/i", Ntentan::$route) > 0)
+            if(preg_match_all("/$excludedRoute/i", Ntentan::$route) > 0)
             {
                 return;
             }
@@ -57,7 +58,7 @@ class SigninComponent extends Component
         
         if($_SESSION["logged_in"] === false || !isset($_SESSION["logged_in"]))
         {
-            Ntentan::redirect($this->controller->route . '/signin');
+            Ntentan::redirect($this->signinRoute === false ? $this->controller->route . '/signin' : '/signin');
         }
     }
     
@@ -139,11 +140,15 @@ class SigninComponent extends Component
                         $user->password = '-';
                         $user->email = $authStatus['email'];
 
-                        @$avatar = uniqid() . '.' . (isset($authStatus['avatar_format']) ? $authStatus['avatar_format'] : end(explode('.', $authStatus['avatar'])));
+                        @$avatar = uniqid(); // . '.' . (isset($authStatus['avatar_format']) ? $authStatus['avatar_format'] : end(explode('.', $authStatus['avatar'])));
                         $avatarData = file_get_contents($authStatus['avatar']);
                         file_put_contents("uploads/avatars/$avatar", $avatarData);
+                        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+                        $mime = $finfo->file("uploads/avatars/$avatar");
+                        @$finalAvatar = $avatar . '.' . end(explode('/', $mime));
+                        rename("uploads/avatars/$avatar", "uploads/avatars/$finalAvatar");
 
-                        $user->avatar = $avatar;
+                        $user->avatar = $finalAvatar;
                         $user->firstname = $authStatus['firstname'];
                         $user->lastname = $authStatus['lastname'];
                         $user->email_confirmed = $authStatus['email_confirmed'];
