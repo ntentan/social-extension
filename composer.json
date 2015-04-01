@@ -4,7 +4,7 @@
     "require": {
         "facebook/php-sdk-v4": "4.0.*",
         "google/apiclient": "1.*",
-        "cybero/yos-social-php5": "@stable"
+        "cerbero/yos-social-php5": "@stable"
     },
     "license": "MIT",
     "authors": [
