@@ -3,7 +3,7 @@
     "description": "An ntentan framework plugin for integrating your application with social network APIs",
     "require": {
         "facebook/php-sdk-v4": "4.0.*",
-        "google/apiclient": "1.0.4-beta",
+        "google/apiclient": "1.*",
         "yahoo/yos-social-php5": "0.2"
     },
     "license": "MIT",
