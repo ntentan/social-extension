@@ -2,7 +2,7 @@
 namespace ntentan\extensions\social\widgets\signin;
 
 use ntentan\extensions\social\Social;
-use ntentan\views\widgets\Widget;
+use ntentan\honam\widgets\Widget;
 
 class SigninWidget extends Widget
 {

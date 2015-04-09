@@ -3,7 +3,7 @@ namespace ntentan\extensions\social\components\signin;
 
 use ntentan\extensions\social\Social;
 use ntentan\controllers\components\Component;
-use ntentan\views\template_engines\TemplateEngine;
+use ntentan\honam\template_engines\TemplateEngine;
 use ntentan\Ntentan;
 use ntentan\models\Model;
 

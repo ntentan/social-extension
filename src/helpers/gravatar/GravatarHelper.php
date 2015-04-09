@@ -1,8 +1,8 @@
 <?php
-namespace ntentan\extensions\social\helpers\gravatars;
-use \ntentan\views\helpers\Helper;
+namespace ntentan\extensions\social\helpers\gravatar;
+use \ntentan\honam\helpers\Helper;
 
-class GravatarsHelper extends Helper {
+class GravatarHelper extends Helper {
 
     private $hash;
     private $size = 48;
