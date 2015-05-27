@@ -1,6 +1,6 @@
 <?php
 namespace ntentan\extensions\social\helpers\gravatar;
-use \ntentan\views\helpers\Helper;
+use \ntentan\honam\Helper;
 
 class GravatarHelper extends Helper {
 
