@@ -32,6 +32,13 @@ class Google extends SigninService
         {
             $client->setAccessToken($_SESSION['access_token']);
         }
+        
+        if($client->isAccessTokenExpired()) {
+
+            $authUrl = $client->createAuthUrl();
+            header('Location: ' . filter_var($authUrl, FILTER_SANITIZE_URL));
+
+        }        
 
         if ($client->getAccessToken()) 
         {
