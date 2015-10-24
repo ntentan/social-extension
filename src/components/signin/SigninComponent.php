@@ -6,6 +6,7 @@ use ntentan\controllers\components\Component;
 use ntentan\views\template_engines\TemplateEngine;
 use ntentan\Ntentan;
 use ntentan\models\Model;
+use ntentan\utils\Text;
 
 class SigninComponent extends Component
 {
@@ -64,7 +65,7 @@ class SigninComponent extends Component
     
     private function getSigninServiceObject($serviceType)
     {
-        $serviceTypeClass = "\\ntentan\\extensions\\social\\components\\signin\\services\\" . Ntentan::camelize($serviceType);
+        $serviceTypeClass = "\\ntentan\\extensions\\social\\components\\signin\\services\\" . Text::ucamelize($serviceType);
         return new $serviceTypeClass();
     }
     
