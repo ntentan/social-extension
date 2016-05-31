@@ -1,12 +1,15 @@
 <?php 
-namespace ntentan\extensions\social\components\signin;
+namespace ntentan\extensions\social\components;
 
 use ntentan\extensions\social\Social;
-use ntentan\controllers\components\Component;
-use ntentan\views\template_engines\TemplateEngine;
+use ntentan\controllers\Component;
+use ntentan\honam\TemplateEngine;
 use ntentan\Ntentan;
 use ntentan\models\Model;
 use ntentan\utils\Text;
+use ntentan\View;
+use ntentan\config\Config;
+use ntentan\Router;
 
 class SigninComponent extends Component
 {
@@ -32,14 +35,14 @@ class SigninComponent extends Component
         
         // Setup the template engine and set params
         TemplateEngine::appendPath(__DIR__ . "/../../../views/signin");
-        $this->set('app', Ntentan::$config['application']['name']);
-        $this->setBaseUrl($this->controller->route);
+        View::set('app', Config::get('ntentan:app.name'));
+        $this->setBaseUrl(Router::getRoute());
     }
         
     public function setBaseUrl($baseUrl)
     {
         Social::$baseUrl = $baseUrl;
-        $this->set('social_signin_base_url', $baseUrl);
+        View::set('social_signin_base_url', $baseUrl);
         $this->excludedRoutes[] = "$baseUrl\/signin";
         $this->excludedRoutes[] = "$baseUrl\/get_profile";
         $this->excludedRoutes[] = "$baseUrl\/register";
@@ -51,7 +54,7 @@ class SigninComponent extends Component
         // Prevent the user from having access to protected content
         foreach($this->excludedRoutes as $excludedRoute)
         {
-            if(preg_match_all("/$excludedRoute/i", Ntentan::$route) > 0)
+            if(preg_match_all("/$excludedRoute/i", Router::getRoute()) > 0)
             {
                 return;
             }
@@ -87,7 +90,7 @@ class SigninComponent extends Component
                 }
                 else
                 {
-                    $this->set('failed', true);
+                    View::set('failed', true);
                 }
             }
         }
@@ -99,8 +102,8 @@ class SigninComponent extends Component
             
             if($authStatus === false)
             {
-                $this->set('failed', true);
-                $this->set('status', 'failed');
+                View::set('failed', true);
+                View::set('status', 'failed');
             }
             else
             {
@@ -131,7 +134,7 @@ class SigninComponent extends Component
                     
                     if($user->count() == 1) 
                     {
-                        $this->set('status', 'existing');
+                        View::set('status', 'existing');
                         return;
                     }
                     else
@@ -193,11 +196,11 @@ class SigninComponent extends Component
         $this->view->template = 'signin_register.tpl.php';
         if(isset($_POST['firstname']))
         {
-            $this->set('form_data', $_POST);
+            View::set('form_data', $_POST);
     
             if($_POST['password'] != $_POST['password2'] && !$_SESSION['third_party_authenticated'])
             {
-                $this->set('errors',  array('password'=>array('Passwords do not match')));
+                View::set('errors',  array('password'=>array('Passwords do not match')));
             }
             else
             {
@@ -239,13 +242,13 @@ class SigninComponent extends Component
                 }
                 else
                 {
-                    $this->set('errors', $user->invalidFields);
+                    View::set('errors', $user->invalidFields);
                 }
             }
         }
         else if(is_array($_SESSION['imported_profile_data']['third_party_profile']))
         {
-            $this->set('form_data', $_SESSION['imported_profile_data']['third_party_profile']);
+            View::set('form_data', $_SESSION['imported_profile_data']['third_party_profile']);
         }
     }
     
@@ -257,7 +260,7 @@ class SigninComponent extends Component
         }
         else
         {
-            $this->set('firstname', $_SESSION['user']['firstname']);
+            View::set('firstname', $_SESSION['user']['firstname']);
         }
     }
     
