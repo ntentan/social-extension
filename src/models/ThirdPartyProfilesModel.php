@@ -1,13 +1,11 @@
 <?php
 namespace ntentan\extensions\social\models;
 
-use ntentan\models\Model;
+use ntentan\Model;
 
 class ThirdPartyProfilesModel extends Model
 {
-
     public $belongsTo = array(
         'user',
     );
-
 }

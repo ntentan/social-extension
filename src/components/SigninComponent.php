@@ -5,7 +5,7 @@ use ntentan\extensions\social\Social;
 use ntentan\controllers\Component;
 use ntentan\honam\TemplateEngine;
 use ntentan\Ntentan;
-use ntentan\models\Model;
+use ntentan\Model;
 use ntentan\utils\Text;
 use ntentan\View;
 use ntentan\config\Config;
@@ -45,10 +45,10 @@ class SigninComponent extends Component
     {
         Social::$baseUrl = $baseUrl;
         View::set('social_signin_base_url', $baseUrl);
-        $this->excludedRoutes[] = "$baseUrl\/signin";
-        $this->excludedRoutes[] = "$baseUrl\/get_profile";
-        $this->excludedRoutes[] = "$baseUrl\/register";
-        $this->excludedRoutes[] = "$baseUrl\/signup";
+        $this->excludedRoutes[] = "{$baseUrl}/signin";
+        $this->excludedRoutes[] = "{$baseUrl}/get_profile";
+        $this->excludedRoutes[] = "{$baseUrl}/register";
+        $this->excludedRoutes[] = "{$baseUrl}/signup";
     }
     
     public function authorize()
@@ -64,7 +64,7 @@ class SigninComponent extends Component
         
         if(Session::get("logged_in"))
         {
-            \ntentan\controllers\Redirect::action('signin');
+            Redirect::path($this->signinRoute ? $this->signinRoute : Url::action($signin));
         }
     }
     
@@ -111,7 +111,7 @@ class SigninComponent extends Component
             {
                 // Check if the third party profile exists if it does fetch the
                 // associated user.
-                $thirdPartyProfile = Model::load('third_party_profiles')->getFirstWithKey($authStatus['key'])->toArray();
+                $thirdPartyProfile = Model::load('third_party_profiles')->fetchFirstWithKey($authStatus['key']);
                 if(count($thirdPartyProfile) > 0)
                 {
                    $_SESSION['user'] = $thirdPartyProfile['user'];
@@ -123,8 +123,6 @@ class SigninComponent extends Component
                     // If the third party profile doesn't exist create it and create
                     // an associated user. However check if the email exists and warn
                     // if necessary
-
-                    //require_once "vendor/http/class.http.php";
                     $user = Model::load('users')->getJustFirst(
                         array(
                             'conditions' => array(
@@ -275,7 +273,7 @@ class SigninComponent extends Component
         {
             if(is_array($arg)) 
             {
-                $this->excludedRoutes = array_merge($arg, $this->excludedRoutes);
+                $this->excludedRoutes += $arg;
             }
             else
             {
@@ -289,7 +287,7 @@ class SigninComponent extends Component
         switch($this->onSignin)
         {
             case self::ON_SUCCESS_REDIRECT:
-                Ntentan::redirect($this->redirectUrl);
+                Redirect::path($this->redirectUrl);
                 break;
 
             case self::ON_SUCCESS_CALL_FUNCTION:
