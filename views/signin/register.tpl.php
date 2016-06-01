@@ -1,5 +1,6 @@
+<?php use ntentan\Session ?>
 <h2>Signup</h2>
-<?php if($_SESSION['third_party_authenticated'] === true): ?>
+<?php if(Session::get('third_party_authenticated') === true): ?>
 <p>
     Here's the profile we imported from <b><?= $_SESSION['third_party_provider'] ?></b>.
     Hope you're well represented.
@@ -11,31 +12,30 @@
     existing account.
 </p>
 <p>
-    <a href="<?= u("{$social_signin_base_url}/signin/google") ?>" alt="Signin with Google"><img src="<?= u(load_asset('images/google.png', p('social/assets/images/google.png'))) ?>" /></a>
-    <a href="<?= u("{$social_signin_base_url}/signin/yahoo") ?>" alt="Signin with Yahoo!"><img src="<?= u(load_asset('images/yahoo.png', p('social/assets/images/yahoo.png'))) ?>" /></a>
-    <a  href="<?= u("{$social_signin_base_url}/signin/facebook") ?>" alt="Signin with facebook"><img src="<?= u(load_asset('images/facebook.png', p('social/assets/images/facebook.png'))) ?>" /></a>
+    <a href="<?= u($social_signin_base_url . '/signin/google') ?>" alt="Signin with Google"><img src="<?= u(load_asset('images/google.png', __DIR__ . ('/../../assets/images/google.png'))) ?>" /></a>
+    <a href="<?= u($social_signin_base_url . '/signin/yahoo') ?>" alt="Signin with Yahoo!"><img src="<?= u(load_asset('images/yahoo.png',  __DIR__ . ('/../../assets/images/yahoo.png'))) ?>" /></a>
+    <a href="<?= u($social_signin_base_url . '/signin/facebook') ?>" alt="Signin with facebook"><img src="<?= u(load_asset('images/facebook.png',  __DIR__ . ('/../../assets/images/facebook.png'))) ?>" /></a>
 </p>
 <hr/>
 <?php endif; ?>
 <?php 
 
-    $this->helpers->form->setErrors($errors);
-    $this->helpers->form->setData($form_data);
-    echo $this->helpers->form->open('register-form');
-    echo $this->helpers->form->get_text_field('Firstname', 'firstname')->required(true);
-    echo $this->helpers->form->get_text_field('Lastname', 'lastname');
-    echo $this->helpers->form->get_text_field('Othernames', 'othernames');
-    echo $this->helpers->form->get_text_field('Email', 'email')->required(true);
-    echo $this->helpers->form->get_text_field('Username', 'username')->required(true);
+    $helpers->form->setErrors($errors);
+    $helpers->form->setData($form_data);
+    echo $helpers->form->open('register-form');
+    echo $helpers->form->get_text_field('Firstname', 'firstname')->setRequired(true);
+    echo $helpers->form->get_text_field('Lastname', 'lastname');
+    echo $helpers->form->get_text_field('Othernames', 'othernames');
+    echo $helpers->form->get_text_field('Email', 'email')->setRequired(true);
+    echo $helpers->form->get_text_field('Username', 'username')->setRequired(true);
     
-    if(!$_SESSION['third_party_authenticated'])
+    if(Session::get('third_party_authenticated'))
     {
-        echo $this->helpers->form->get_password_field('Password', 'password')->required(true);
-        echo $this->helpers->form->get_password_field('Retype-Password', 'password2')->required(true);
-        echo $this->helpers->form->close('Register');
+        echo $helpers->form->get_password_field('Password', 'password')->setRequired(true);
+        echo $helpers->form->get_password_field('Retype-Password', 'password2')->setRequired(true);
+        echo $helpers->form->close('Register');
     }
     else
     {
-        echo $this->helpers->form->close("Save {$_SESSION['third_party_provider']} profile");
+        echo $helpers->form->close("Save " . Session::get('third_party_provider') . " profile");
     } 
-?>

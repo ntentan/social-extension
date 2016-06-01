@@ -1,14 +1,13 @@
 <?php
-namespace ntentan\extensions\social\components\signin\services;
+namespace ntentan\extensions\social\components\signin;
 
 use ntentan\Ntentan;
-use ntentan\extensions\social\components\signin\SigninService;
 use Facebook\FacebookSession;
 use Facebook\FacebookRequest;
 use Facebook\GraphUser;
 use Facebook\FacebookRequestException;
 
-class Facebook extends SigninService
+class FacebookSignin extends AbstractSignin
 {
     public function signin()
     {

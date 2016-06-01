@@ -3,7 +3,7 @@ namespace ntentan\extensions\social\components\signin;
 
 use ntentan\Ntentan;
 
-abstract class SigninService
+abstract class AbstractSignin
 {
     protected function doOpenId($identity)
     {

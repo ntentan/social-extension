@@ -10,6 +10,8 @@ use ntentan\utils\Text;
 use ntentan\View;
 use ntentan\config\Config;
 use ntentan\Router;
+use ntentan\controllers\Redirect;
+use ntentan\Session;
 
 class SigninComponent extends Component
 {
@@ -36,7 +38,7 @@ class SigninComponent extends Component
         // Setup the template engine and set params
         TemplateEngine::appendPath(realpath(__DIR__ . "/../../views/signin"));
         View::set('app', Config::get('ntentan:app.name'));
-        $this->setBaseUrl(Router::getRoute());
+        View::set('social_signin_base_url', '');
     }
         
     public function setBaseUrl($baseUrl)
@@ -60,21 +62,21 @@ class SigninComponent extends Component
             }
         }
         
-        if($_SESSION["logged_in"] === false || !isset($_SESSION["logged_in"]))
+        if(Session::get("logged_in"))
         {
-            //\ntentan\controllers\Redirect::action('signin');
+            \ntentan\controllers\Redirect::action('signin');
         }
     }
     
     private function getSigninServiceObject($serviceType)
     {
-        $serviceTypeClass = "\\ntentan\\extensions\\social\\components\\signin\\services\\" . Text::ucamelize($serviceType);
+        $serviceTypeClass = "\\ntentan\\extensions\\social\\components\\signin\\" . Text::ucamelize($serviceType) . "Signin";
         return new $serviceTypeClass();
     }
     
-    public function signin($serviceType = null)
+    public function signin($provider = null)
     {
-        if($serviceType === null)
+        if($provider === null)
         {
             View::setTemplate('social_signin.tpl.php');
             if(isset($_POST['username']))
@@ -96,8 +98,8 @@ class SigninComponent extends Component
         }
         else
         {
-            $this->view->template = 'third_party.tpl.php';
-            $service = $this->getSigninServiceObject($serviceType);
+            View::setTemplate('third_party.tpl.php');
+            $service = $this->getSigninServiceObject($provider);
             $authStatus = $service->signin();
             
             if($authStatus === false)
@@ -193,7 +195,9 @@ class SigninComponent extends Component
     
     public function register()
     {
-        $this->view->template = 'signin_register.tpl.php';
+        View::setTemplate('signin_register.tpl.php');
+        View::set('errors', []);
+        View::set('form_data', []);
         if(isset($_POST['firstname']))
         {
             View::set('form_data', $_POST);
@@ -246,9 +250,9 @@ class SigninComponent extends Component
                 }
             }
         }
-        else if(is_array($_SESSION['imported_profile_data']['third_party_profile']))
+        else if(is_array(Session::get('imported_profile_data')['third_party_profile']))
         {
-            View::set('form_data', $_SESSION['imported_profile_data']['third_party_profile']);
+            View::set('form_data', Session::get('imported_profile_data')['third_party_profile']);
         }
     }
     

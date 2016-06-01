@@ -1,10 +1,9 @@
 <?php
-namespace ntentan\extensions\social\components\signin\services;
+namespace ntentan\extensions\social\components\signin;
 
-use ntentan\extensions\social\components\signin\SigninService;
 use ntentan\Ntentan;
 
-class Google extends SigninService
+class GoogleSignin extends AbstractSignin
 {
     public function signin()
     {
