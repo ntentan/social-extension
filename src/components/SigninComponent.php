@@ -34,7 +34,7 @@ class SigninComponent extends Component
         parent::init();
         
         // Setup the template engine and set params
-        TemplateEngine::appendPath(__DIR__ . "/../../../views/signin");
+        TemplateEngine::appendPath(realpath(__DIR__ . "/../../views/signin"));
         View::set('app', Config::get('ntentan:app.name'));
         $this->setBaseUrl(Router::getRoute());
     }
@@ -62,7 +62,7 @@ class SigninComponent extends Component
         
         if($_SESSION["logged_in"] === false || !isset($_SESSION["logged_in"]))
         {
-            Ntentan::redirect($this->signinRoute === false ? $this->controller->route . '/signin' : '/signin');
+            //\ntentan\controllers\Redirect::action('signin');
         }
     }
     
@@ -76,7 +76,7 @@ class SigninComponent extends Component
     {
         if($serviceType === null)
         {
-            $this->view->template = 'social_signin.tpl.php';
+            View::setTemplate('social_signin.tpl.php');
             if(isset($_POST['username']))
             {
                 $user = Model::load('users')->getFirstWithUsername($_POST['username']);
