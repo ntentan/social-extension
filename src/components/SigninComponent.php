@@ -114,7 +114,7 @@ class SigninComponent extends Component
                 $thirdPartyProfile = Model::load('third_party_profiles')->fetchFirstWithKey($authStatus['key']);
                 if(count($thirdPartyProfile) > 0)
                 {
-                   $_SESSION['user'] = $thirdPartyProfile['user'];
+                   $_SESSION['user'] = $thirdPartyProfile['user']->toArray();
                    $_SESSION['logged_in'] = true;
                    $this->performSuccessOperation();
                 }
@@ -200,7 +200,7 @@ class SigninComponent extends Component
         {
             View::set('form_data', $_POST);
     
-            if($_POST['password'] != $_POST['password2'] && !$_SESSION['third_party_authenticated'])
+            if($_POST['password'] != $_POST['password2'] && !Session::get('third_party_authenticated'))
             {
                 View::set('errors',  array('password'=>array('Passwords do not match')));
             }
