@@ -64,7 +64,7 @@ class SigninComponent extends Component
         
         if(Session::get("logged_in"))
         {
-            Redirect::path($this->signinRoute ? $this->signinRoute : Url::action($signin));
+            Redirect::path($this->signinRoute ? $this->signinRoute : Url::action('signin'));
         }
     }
     
@@ -252,6 +252,16 @@ class SigninComponent extends Component
         {
             View::set('form_data', Session::get('imported_profile_data')['third_party_profile']);
         }
+    }
+    
+    /**
+     * @ntentan.action register
+     * @ntentan.method POST
+     * @param \paanoo\models\Users $user
+     */
+    public function saveRegistration(\paanoo\models\Users $user)
+    {
+        var_dump($user);
     }
     
     public function confirmRegistration()
