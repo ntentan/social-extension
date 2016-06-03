@@ -7,7 +7,7 @@
     <?php endif; ?>
     <?php
     echo $helpers->form->open('login-form')->setAction(u($social_signin_base_url . '/signin'));
-    echo $helpers->form->get_text_field('Username or Email', 'username');
+    echo $helpers->form->get_text_field('Username or Email', 'username')->setValue(isset($username) ? $username : '');
     echo $helpers->form->get_password_field('Password', 'password');
     ?>
     <?php echo $helpers->form->close('Login'); ?>

@@ -62,7 +62,7 @@ class SigninComponent extends Component
             }
         }
         
-        if(Session::get("logged_in"))
+        if(!Session::get("logged_in"))
         {
             Redirect::path($this->signinRoute ? $this->signinRoute : Url::action('signin'));
         }
@@ -79,22 +79,6 @@ class SigninComponent extends Component
         if($provider === null)
         {
             View::setTemplate('social_signin.tpl.php');
-            if(isset($_POST['username']))
-            {
-                $user = Model::load('users')->getFirstWithUsername($_POST['username']);
-                if(md5($_POST['password']) == $user->password)
-                {
-                    $_SESSION = array(
-                        'logged_in' => true,
-                        'user' => $user->toArray(),
-                    );
-                    $this->performSuccessOperation();
-                }
-                else
-                {
-                    View::set('failed', true);
-                }
-            }
         }
         else
         {
@@ -174,27 +158,36 @@ class SigninComponent extends Component
         }
     }
     
-    public function signout()
+    /**
+     * @ntentan.action signin
+     * @ntentan.method POST
+     * @param string $username
+     * @param string $password
+     */
+    public function localSignin($username, $password)
     {
-        $this->template = false;        
-        
-        if($this->signoutFunction != '')
+        $user = Model::load('users')->fetchFirstWithUsername($username);
+        if(md5($password) == $user->password)
         {
-            $decomposed = explode("::", $this->signoutFunction);
-            $className = $decomposed[0];
-            $methodName = $decomposed[1];
-            $method = new \ReflectionMethod($className, $methodName);
-            $method->invoke(null, $this->controller);       
+            Session::set('logged_in', true);
+            Session::set('user', $user->toArray());
+            $this->performSuccessOperation();
         }
-        
-        session_destroy();        
-        Ntentan::redirect($this->redirectUrl);
+        else
+        {
+            View::set('login_error', true);
+        }
+    }
+    
+    public function signout()
+    {        
+        Session::reset();
+        Redirect::path($this->redirectUrl);
     }
     
     public function register()
     {
-        View::setTemplate('signin_register.tpl.php');
-        View::set('errors', []);
+        /*View::set('errors', []);
         View::set('form_data', []);
         if(isset($_POST['firstname']))
         {
@@ -251,7 +244,7 @@ class SigninComponent extends Component
         else if(is_array(Session::get('imported_profile_data')['third_party_profile']))
         {
             View::set('form_data', Session::get('imported_profile_data')['third_party_profile']);
-        }
+        }*/
     }
     
     /**
@@ -259,9 +252,15 @@ class SigninComponent extends Component
      * @ntentan.method POST
      * @param \paanoo\models\Users $user
      */
-    public function saveRegistration(\paanoo\models\Users $user)
+    public function saveRegistration(\ntentan\extensions\social\models\Users $user)
     {
-        var_dump($user);
+        if($user->save()) {
+            $user->avatar = '';
+            Session::set('logged_in', true);
+            Session::set('user', $user->toArray());
+            $this->performSuccessOperation();
+        }
+        View::set('model', $user);
     }
     
     public function confirmRegistration()
